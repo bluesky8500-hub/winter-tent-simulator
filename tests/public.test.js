@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {configureCatalog,evaluate} from '../src/engine.js';
 import {encodeScenarioFile,decodeScenarioFile} from '../src/scenario-file.js';
-import {boxesOverlap,edgeClearance,getPlacedBox,arrangementSummary} from '../src/fit-board.js';
+import {boxesOverlap,edgeClearance,getPlacedBox,arrangementSummary,connectorContact} from '../src/fit-board.js';
 
 const catalog=JSON.parse(readFileSync(new URL('../deploy-source/catalog.public.json',import.meta.url)));
 configureCatalog(catalog);
@@ -42,4 +42,10 @@ test('저장한 본체 위치의 전체 경계 면적을 계산하고 커넥터 
   const imported=decodeScenarioFile(encodeScenarioFile(s,[s]),catalog).saved[0];
   assert.deepEqual(imported.connectorPositions,s.connectorPositions);
   assert.deepEqual(imported.connectorLinks,s.connectorLinks);
+});
+test('연결 표시는 두 본체의 마주 보는 구간을 따르고 폭이 없으면 추정하지 않는다',()=>{
+  const a={x:0,y:0,length:3.6,width:3.8},b={x:3.7,y:0.4,length:2.8,width:3.6};
+  assert.deepEqual(connectorContact(a,b,0.1),{x:3.6,y:0.4,length:0.1,width:3.4,contact:3.4,depth:0.1});
+  assert.equal(connectorContact(a,{...b,y:4},null),null);
+  assert.equal(connectorContact(a,b,null)?.depth,null);
 });
