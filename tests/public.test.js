@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {configureCatalog,evaluate} from '../src/engine.js';
 import {encodeScenarioFile,decodeScenarioFile} from '../src/scenario-file.js';
-import {boxesOverlap,edgeClearance,getPlacedBox} from '../src/fit-board.js';
+import {boxesOverlap,edgeClearance,getPlacedBox,arrangementSummary} from '../src/fit-board.js';
 
 const catalog=JSON.parse(readFileSync(new URL('../deploy-source/catalog.public.json',import.meta.url)));
 configureCatalog(catalog);
@@ -34,4 +34,12 @@ test('자유 배치 위치에 따라 네 방향 여유와 겹침을 계산한다
   assert.equal(boxesOverlap(camp,coody),true);
   const moved={...coody,x:7.5,y:4.2};
   assert.equal(boxesOverlap(camp,moved),false);
+});
+test('저장한 본체 위치의 전체 경계 면적을 계산하고 커넥터 위치를 공유한다',()=>{
+  const s={name:'배치',packages:['hubBase','coody10Base'],options:{proConnector:1},fitPositions:{hubBody:{x:0,y:0,rotated:false},coody10Body:{x:3.7,y:0,rotated:false}},connectorPositions:{proConnector:{x:3.65,y:1.8}},connectorLinks:{proConnector:['hubBody','coody10Body']}};
+  const r=evaluate(s);const size=arrangementSummary(r.modules,catalog,s);
+  assert.deepEqual(size.extent,{length:6.5,width:3.8,area:24.7,fits:true});
+  const imported=decodeScenarioFile(encodeScenarioFile(s,[s]),catalog).saved[0];
+  assert.deepEqual(imported.connectorPositions,s.connectorPositions);
+  assert.deepEqual(imported.connectorLinks,s.connectorLinks);
 });

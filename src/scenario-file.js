@@ -24,7 +24,11 @@ export function decodeScenarioFile(text,catalog){
     if(item.fitPositions&&typeof item.fitPositions==='object'&&!Array.isArray(item.fitPositions))for(const [id,position] of Object.entries(item.fitPositions)){
       if(moduleIds.has(id)&&position&&Number.isFinite(position.x)&&Number.isFinite(position.y))fitPositions[id]={x:Math.max(0,Math.min(10,position.x)),y:Math.max(0,Math.min(7,position.y)),rotated:Boolean(position.rotated)};
     }
-    return {name:String(item.name??'이름 없는 조합').slice(0,60),packages:[...new Set(item.packages)],options:selected,...(item.color?{color:['베이지','그레이카키'].includes(item.color)?item.color:undefined}:{}),...(Object.keys(fitPositions).length?{fitPositions}:{}),...(moduleIds.has(item.fitSelected)?{fitSelected:item.fitSelected}:{})};
+    const connectorLinks={};
+    if(item.connectorLinks&&typeof item.connectorLinks==='object'&&!Array.isArray(item.connectorLinks))for(const [id,pair] of Object.entries(item.connectorLinks))if(options.has(id)&&/connector/i.test(id)&&Array.isArray(pair)&&pair.length===2)connectorLinks[id]=pair.map(x=>moduleIds.has(x)?x:'');
+    const connectorPositions={};
+    if(item.connectorPositions&&typeof item.connectorPositions==='object'&&!Array.isArray(item.connectorPositions))for(const [id,p] of Object.entries(item.connectorPositions))if(options.has(id)&&/connector/i.test(id)&&p&&Number.isFinite(p.x)&&Number.isFinite(p.y))connectorPositions[id]={x:Math.max(0,Math.min(10,p.x)),y:Math.max(0,Math.min(7,p.y))};
+    return {name:String(item.name??'이름 없는 조합').slice(0,60),packages:[...new Set(item.packages)],options:selected,...(item.color?{color:['베이지','그레이카키'].includes(item.color)?item.color:undefined}:{}),...(Object.keys(fitPositions).length?{fitPositions}:{}),...(moduleIds.has(item.fitSelected)?{fitSelected:item.fitSelected}:{}),...(Object.keys(connectorLinks).length?{connectorLinks}:{}),...(Object.keys(connectorPositions).length?{connectorPositions}:{})};
   };
   return {current:data.current?clean(data.current):null,saved:data.saved.map(clean)};
 }

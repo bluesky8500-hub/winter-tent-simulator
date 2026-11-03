@@ -1,6 +1,6 @@
 import {evaluate,won,compareQuote,configureCatalog} from './engine.js';
 import {encodeScenarioFile,decodeScenarioFile} from './scenario-file.js';
-import {renderFitBoard} from './fit-board.js';
+import {renderFitBoard,arrangementSummary} from './fit-board.js';
 
 const response=await fetch(new URL('../catalog.json',import.meta.url));
 if(!response.ok)throw new Error(`공개 카탈로그를 불러오지 못했습니다: ${response.status}`);
@@ -17,10 +17,32 @@ const presets=[
 ];
 let scenario={name:'새 조합',packages:['campBase'],options:{}};
 let saved=readSaved();
+let compareSelected=new Set();
 function readSaved(){try{const x=JSON.parse(localStorage.getItem('tent-scenarios-v1')||'[]');return Array.isArray(x)?x:[]}catch{return []}}
 function persist(){try{localStorage.setItem('tent-scenarios-v1',JSON.stringify(saved));return true}catch{return false}}
 function sourceLink(id){const s=catalog.sources[id];return esc(s?.label||id||'출처 미확인')}
 function optionAvailable(o){const p=scenario.packages;const moduleIds=p.flatMap(id=>catalog.packages.find(x=>x.id===id)?.modules||[]);return o.target==='coodyDock'?p.includes('hubBase')&&p.includes('coody10Base'):o.target==='coody8Dock'?p.includes('coody8Base')&&p.length>1:o.target==='coodyProStandard'?p.some(id=>['familiaBase','hubBase','coody10Base'].includes(id)):o.target==='coodyPro'||o.target==='coodyAccessory'?p.some(id=>['familiaBase','hubBase','coody10Base','coody8Base'].includes(id)):o.target==='airnokShared'?p.some(id=>['happyBase','airnok6Base','airnok8Base'].includes(id)):['happy','happyBase'].includes(o.target)?p.includes('happyBase'):moduleIds.includes(o.target)}
+function contents(s){
+  const included=s.packages.flatMap(id=>catalog.packages.find(x=>x.id===id)?.included||[]).filter(id=>!(id==='tarpFrontTpuIncluded'&&s.options.skySwap)).map(id=>catalog.options.find(x=>x.id===id)).filter(Boolean);
+  const gifts=[...s.packages.flatMap(id=>catalog.packages.find(x=>x.id===id)?.gifts||[]),...(s.packages.includes('airnok8Base')&&s.color==='베이지'?['airnok8BeigeFly','airnok8BeigeSideTpu']:[])].map(id=>catalog.options.find(x=>x.id===id)).filter(Boolean);
+  if(s.packages.includes('airnok8Base')&&s.color==='그레이카키')included.push(catalog.options.find(x=>x.id==='airnok8GrayFly'));
+  return {included:included.filter(Boolean),gifts};
+}
+function connectorIds(s){return Object.keys(s.options||{}).filter(id=>s.options[id]>0&&/connector/i.test(id))}
+function renderConnectorPlacement(r){
+  const ids=connectorIds(scenario),modules=r.modules.map(id=>catalog.modules.find(m=>m.id===id)).filter(Boolean);
+  $('connectorPlacement').innerHTML=ids.length?`<div class="label">커넥터 연결 위치</div>${ids.map(id=>{const o=catalog.options.find(x=>x.id===id);const selected=scenario.connectorLinks?.[id]||[];const choices=modules.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('');return `<div class="connector-row"><strong>${esc(o?.name||id)}</strong><label>첫 모듈<select data-link="${esc(id)}" data-end="0"><option value="">선택</option>${choices}</select></label><label>둘째 모듈<select data-link="${esc(id)}" data-end="1"><option value="">선택</option>${choices}</select></label></div>`}).join('')}<p class="small">연결 대상을 기록합니다. 커넥터의 전체 설치 치수가 확인되지 않으면 면적에 합산하지 않습니다.</p>`:'';
+  for(const select of $('connectorPlacement').querySelectorAll('[data-link]')){
+    select.value=scenario.connectorLinks?.[select.dataset.link]?.[Number(select.dataset.end)]||'';
+    select.onchange=()=>{scenario.connectorLinks??={};const pair=scenario.connectorLinks[select.dataset.link]||['',''];pair[Number(select.dataset.end)]=select.value;scenario.connectorLinks[select.dataset.link]=pair;renderLayout(r)};
+  }
+}
+function renderLayout(r){
+  const summary=arrangementSummary(r.modules,catalog,scenario),f=summary.extent;
+  if(!f){$('layout').innerHTML='<span class="badge uncertain">배치 치수 미확인</span>';return}
+  const links=connectorIds(scenario).map(id=>{const pair=scenario.connectorLinks?.[id]||[];return `${catalog.options.find(x=>x.id===id)?.name||id}: ${pair.map(x=>catalog.modules.find(m=>m.id===x)?.name||'미지정').join(' ↔ ')}`});
+  $('layout').innerHTML=`<span class="badge ${summary.unknown.length?'uncertain':''}">${summary.unknown.length?'일부 본체 치수 미확인':'확정한 본체 배치'}</span><div class="fit-site fit-preview">${summary.boxes.map((b,i)=>`<div class="fit-tent" style="left:${b.x*10}%;top:${b.y/7*100}%;width:${b.length*10}%;height:${b.width/7*100}%;--fit-color:${i%6}"><span>${esc(catalog.modules.find(m=>m.id===b.id)?.name)}</span><small>${b.length} × ${b.width}m</small></div>`).join('')}${connectorIds(scenario).map(id=>{const p=scenario.connectorPositions?.[id]||{x:5,y:3.5};return `<div class="fit-connector" style="left:${p.x*10}%;top:${p.y/7*100}%">연결</div>`}).join('')}</div><p><strong>본체 배치 외곽 ${f.length.toFixed(2)} × ${f.width.toFixed(2)}m · ${f.area.toFixed(2)}㎡</strong></p><p class="small">10 × 7m 사이트: ${f.fits?'본체 치수 기준 내부':'본체가 사이트 경계를 넘음'}${summary.overlap?' · 본체 겹침':''}. 외곽 면적은 빈 공간을 포함한 경계 사각형입니다.</p>${links.length?`<p class="small">커넥터 연결: ${esc(links.join(' / '))}</p><p class="small">커넥터 설치 면적은 전체 치수 미확인으로 외곽에 포함되지 않았습니다.</p>`:''}${summary.unknown.length?`<p class="small">치수 미확인: ${esc(summary.unknown.join(' · '))}</p>`:''}<p class="small">가이라인·차량·동선·팩다운 여유는 미확인입니다. 실제 설치 가능 판정은 보류합니다.</p>`;
+}
 function renderControls(){
   $('scenarioName').value=scenario.name;
   $('presets').innerHTML=presets.map((p,i)=>`<button data-preset="${i}">${esc(p.name)}</button>`).join('');
@@ -31,21 +53,32 @@ function renderControls(){
   $('options').innerHTML=(scenario.packages.includes('airnok8Base')?`<div class="choice"><label>8.0T 색상 <select data-color><option value="" ${!scenario.color?'selected':''}>미선택</option><option value="베이지" ${scenario.color==='베이지'?'selected':''}>베이지</option><option value="그레이카키" ${scenario.color==='그레이카키'?'selected':''}>그레이카키</option></select></label></div>`:'')+(available.length?available.map(o=>{const qty=scenario.options[o.id]||0;const adoption=catalog.adoptions.find(a=>a.subject===o.id&&a.field==='price');const claim=catalog.claims.find(c=>c.id===adoption?.claimId);return `<div class="choice"><div><strong>${esc(o.name)}</strong><br><small>${won(claim?.value)}${o.condition?' · '+esc(o.condition):''}</small></div><select aria-label="${esc(o.name)} 수량" data-option="${o.id}">${Array.from({length:o.max+1},(_,i)=>`<option value="${i}" ${qty===i?'selected':''}>${i}개</option>`).join('')}</select></div>`}).join(''):'<p class="small">제품을 선택하면 적용 가능한 옵션이 표시됩니다.</p>');
   document.querySelector('[data-color]')?.addEventListener('change',e=>{scenario.color=e.target.value;if(scenario.color==='베이지')delete scenario.options.airnok8SideTpu;render()});
   document.querySelectorAll('[data-option]').forEach(x=>x.onchange=()=>{const id=x.dataset.option;const n=Number(x.value);if(n)scenario.options[id]=n;else delete scenario.options[id];render()});
+  const items=contents(scenario);
+  $('buildIncluded').innerHTML=`<div class="included-box"><strong>기본 포함</strong><p>${items.included.length?items.included.map(x=>esc(x.name)+(x.quantity?` ${x.quantity}개`:'' )).join(' · '):'기록된 항목 없음'}</p><strong>사은품</strong><p>${items.gifts.length?items.gifts.map(x=>esc(x.name)+(x.quantity?` ${x.quantity}개`:'' )).join(' · '):'기록된 항목 없음'}${items.gifts.length?' <small>행사 적용 조건 확인 필요</small>':''}</p></div>`;
 }
 function renderResult(){
   const r=evaluate(scenario);
   const rows=r.lines.map(x=>`<div class="row"><span>${esc(x.category)} · ${esc(x.name)}${x.quantity>1?' × '+x.quantity:''}</span><strong>${x.status==='정보 없음'?'별도 기록 없음':won(x.amount)}</strong></div>`).join('');
-  const included=scenario.packages.flatMap(id=>catalog.packages.find(x=>x.id===id)?.included||[]).filter(id=>!(id==='tarpFrontTpuIncluded'&&scenario.options.skySwap)).map(id=>catalog.options.find(x=>x.id===id)).filter(Boolean);
-  const gifts=[...scenario.packages.flatMap(id=>catalog.packages.find(x=>x.id===id)?.gifts||[]),...(scenario.packages.includes('airnok8Base')&&scenario.color==='베이지'?['airnok8BeigeFly','airnok8BeigeSideTpu']:[])].map(id=>catalog.options.find(x=>x.id===id)).filter(Boolean);
-  if(scenario.packages.includes('airnok8Base')&&scenario.color==='그레이카키') included.push(catalog.options.find(x=>x.id==='airnok8GrayFly'));
+  const {included,gifts}=contents(scenario);
   $('result').innerHTML=`<span class="badge ${r.total==null?'uncertain':''}">${r.total==null?'최종 총액 미확인':'최종 총액 확인'}</span><div class="money ${r.total==null?'unknown':''}">${won(r.total)}</div><div class="row subtotal"><span>확인된 항목 소계</span><strong>${won(r.knownSubtotal)}</strong></div>${rows}<div class="label">기본 포함품</div><p class="small">${included.length?included.map(x=>`${esc(x.name)}${x.quantity?' '+x.quantity+'개':''}`).join(' · '):'기록된 항목 없음'}</p><div class="label">판매 당시 사은품</div><p class="small">${gifts.length?gifts.map(x=>`${esc(x.name)}${x.quantity?' '+x.quantity+'개':''} (행사 적용 확인 필요)`).join(' · '):'기록된 항목 없음'}</p><div class="warning-list">${[...r.errors.map(x=>'오류: '+x),...r.warnings].map(x=>`<div>• ${esc(x)}</div>`).join('')||'확인할 경고 없음'}</div>`;
   $('docking').innerHTML=`<span class="badge ${r.docking.status==='확정'?'':'uncertain'}">${esc(r.docking.status)}</span><p class="small">${esc(r.docking.note||'선택된 모듈에 대한 도킹 규칙 없음')}<br>도킹 호환성과 사이트 설치 적합성은 별도로 판단합니다.</p>`;
-  renderFitBoard($('layout'),r.modules,catalog,scenario);
+  renderFitBoard($('buildLayout'),r.modules,catalog,scenario,()=>renderLayout(r));
+  renderConnectorPlacement(r);
+  renderLayout(r);
 }
 function renderSaved(){
-  $('saved').innerHTML=saved.length?`<div class="saved-grid">${saved.map((s,i)=>{const r=evaluate(s);return `<div class="saved-card"><h3>${esc(s.name)}</h3><div class="small">${esc(s.packages.map(id=>catalog.packages.find(x=>x.id===id)?.name||id).join(' + '))}</div><div class="money" style="font-size:21px">${won(r.total)}</div><div class="small">확인 소계 ${won(r.knownSubtotal)} · 도킹 ${esc(r.docking.status)} · 배치 ${esc(r.layout.status)}</div><button data-load="${i}">불러오기</button><button data-delete="${i}">삭제</button></div>`}).join('')}</div>`:'<p class="small">저장한 조합이 없습니다. 현재 조합을 저장하면 나란히 비교할 수 있습니다.</p>';
+  $('saved').innerHTML=saved.length?`<p class="small">비교할 조합을 선택하세요.</p><div class="saved-grid">${saved.map((s,i)=>{const r=evaluate(s);return `<div class="saved-card"><label><input type="checkbox" data-compare="${i}" ${compareSelected.has(i)?'checked':''}> <strong>${esc(s.name)}</strong></label><div class="small">${esc(s.packages.map(id=>catalog.packages.find(x=>x.id===id)?.name||id).join(' + '))}</div><div class="money" style="font-size:21px">${won(r.total)}</div><button data-load="${i}">불러오기</button><button data-delete="${i}">삭제</button></div>`}).join('')}</div>`:'<p class="small">저장한 조합이 없습니다. 현재 조합을 저장하면 선택 비교할 수 있습니다.</p>';
+  document.querySelectorAll('[data-compare]').forEach(x=>x.onchange=()=>{const i=Number(x.dataset.compare);if(x.checked)compareSelected.add(i);else compareSelected.delete(i);renderComparison()});
   document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{scenario=structuredClone(saved[Number(b.dataset.load)]);render();window.scrollTo({top:0,behavior:'smooth'})});
-  document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{saved.splice(Number(b.dataset.delete),1);persist();renderSaved()});
+  document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{const index=Number(b.dataset.delete);saved.splice(index,1);compareSelected=new Set([...compareSelected].filter(i=>i!==index).map(i=>i>index?i-1:i));persist();renderSaved()});
+  renderComparison();
+}
+function renderComparison(){
+  const selected=[...compareSelected].sort((a,b)=>a-b).filter(i=>saved[i]);
+  if(!selected.length){$('comparison').innerHTML='';return}
+  const columns=selected.map(i=>{const s=saved[i],r=evaluate(s),shipping=r.lines.find(x=>x.category==='배송비')?.amount,subtotal=r.lines.filter(x=>!['배송비','세트 할인'].includes(x.category)).reduce((sum,x)=>sum+(x.amount||0),0),missing=r.lines.some(x=>!['배송비','세트 할인'].includes(x.category)&&x.amount==null),size=arrangementSummary(r.modules,catalog,s),contentsList=contents(s);return {s,r,shipping,subtotal,missing,size,contentsList}});
+  const cell=fn=>columns.map(x=>`<td>${fn(x)}</td>`).join('');
+  $('comparison').innerHTML=`<div class="label">선택한 조합 비교</div><div class="ledger comparison-table"><table><thead><tr><th>항목</th>${cell(x=>`<th>${esc(x.s.name)}</th>`)}</tr></thead><tbody><tr><th>제품·옵션 금액<br><small>배송비 제외</small></th>${cell(x=>x.missing?'미확인 · 확인 소계 '+won(x.subtotal):won(x.subtotal))}</tr><tr><th>배송비</th>${cell(x=>won(x.shipping))}</tr><tr><th>최종 총액</th>${cell(x=>won(x.r.total))}</tr><tr><th>구성품</th>${cell(x=>esc([...x.r.modules.map(id=>catalog.modules.find(m=>m.id===id)?.name||id),...x.r.lines.filter(line=>['옵션','모듈 교체금'].includes(line.category)).map(line=>`${line.name} × ${line.quantity}`),...x.contentsList.included.map(item=>`${item.name} (기본)`),...x.contentsList.gifts.map(item=>`${item.name} (사은품·조건 확인)`)].join(' · ')))}</tr><tr><th>배치 외곽</th>${cell(x=>x.size.extent?`${x.size.extent.length.toFixed(2)} × ${x.size.extent.width.toFixed(2)}m · ${x.size.extent.area.toFixed(2)}㎡${x.size.unknown.length?' (일부 미확인)':''}`:'미확인')}</tr></tbody></table></div><p class="small">배치 외곽은 저장한 본체 위치의 경계 사각형입니다. 커넥터·가이라인 설치 여유는 치수가 확인되지 않으면 포함하지 않습니다.</p>`;
 }
 function renderEvidence(){
   $('specs').innerHTML=`<div class="ledger"><table><thead><tr><th>제품</th><th>외곽 치수 / 면적</th><th>중량</th><th>원단 / 플라이</th><th>상태·출처</th></tr></thead><tbody>${catalog.specs.map(s=>{const p=catalog.products.find(x=>x.id===s.product);return `<tr><td><strong>${esc(p?.brand)} ${esc(p?.name)}</strong><br><span class="small">${p?.primary?'주요 후보':'추가 등록'}</span></td><td>${esc(s.dimensions)}<br>${esc(s.area)}</td><td>${esc(s.weight)}</td><td>${esc(s.fabric)}<br>${esc(s.fly)}</td><td><span class="badge ${s.status==='충돌'?'conflict':s.status.includes('미확인')?'uncertain':''}">${esc(s.status)}</span><br>${sourceLink(s.source)} · ${esc(s.locator)}</td></tr>`}).join('')}</tbody></table></div>`;
