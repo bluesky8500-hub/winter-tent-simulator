@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {configureCatalog,evaluate} from '../src/engine.js';
+import {configureCatalog,evaluate,scenarioDisplayName} from '../src/engine.js';
 import {encodeScenarioFile,decodeScenarioFile} from '../src/scenario-file.js';
-import {boxesOverlap,edgeClearance,getPlacedBox,arrangementSummary,connectorContact,connectorIds,moveGroup} from '../src/fit-board.js';
+import {boxesOverlap,edgeClearance,getPlacedBox,arrangementSummary,connectorContact,connectorIds,moveGroup,snapDockingPlacement} from '../src/fit-board.js';
 
 const catalog=JSON.parse(readFileSync(new URL('../deploy-source/catalog.public.json',import.meta.url)));
 configureCatalog(catalog);
@@ -71,4 +71,45 @@ test('기본 포함 연결부와 선택 옵션 커넥터를 모두 배치 대상
   assert.deepEqual(connectorIds({packages:['happyBase'],options:{}},catalog),['happyConnector']);
   assert.deepEqual(connectorIds({packages:['hubBase','coody10Base'],options:{proConnector:1}},catalog),['proConnector']);
   assert.equal(catalog.modules.find(m=>m.id==='happyConnector').length,0.6);
+});
+test('도킹 규칙은 방향과 커넥터 필요 상태를 구조적으로 제공한다',()=>{
+  const requirements=new Set(['required','optional','included','unknown']);
+  assert.ok(catalog.dockingRules.every(rule=>Array.isArray(rule.directions)&&requirements.has(rule.connectorRequirement)));
+  const six=catalog.dockingRules.find(rule=>rule.id==='airnok6Tarp');
+  assert.deepEqual(six.directions,['side']);assert.equal(six.connectorRequirement,'required');assert.equal(six.connectorGap,0);
+  for(const id of ['airnok8St','airnok8Tarp']){
+    const rule=catalog.dockingRules.find(item=>item.id===id);
+    assert.equal(rule.connectorRequirement,'optional');assert.equal(rule.directGap,0);assert.equal(rule.connectorGap,.6);
+  }
+  assert.equal(catalog.dockingRules.filter(rule=>rule.id.startsWith('coodyFamilia')&&rule.status==='미확인').length,2);
+});
+test('에어노크 커넥터 필수와 선택 규칙을 구분한다',()=>{
+  assert.equal(evaluate({packages:['happyBase','airnok6Base'],options:{}}).docking.status,'커넥터 미선택');
+  assert.equal(evaluate({packages:['happyBase','airnok6Base'],options:{airnok6Connector:1}}).docking.status,'확정');
+  assert.equal(evaluate({packages:['happyBase','airnok8Base'],options:{}}).docking.status,'확정');
+  assert.ok(evaluate({packages:['airnok8Base'],options:{airnok8Connector:1}}).errors.some(error=>error.includes('적용 대상')));
+  assert.ok(evaluate({packages:['campBase','happyBase'],options:{}}).errors.some(error=>error.includes('도킹 호환성')));
+  assert.equal(evaluate({packages:['familiaBase','hubBase'],options:{}}).docking.status,'미확인');
+});
+test('8.0T 선택 커넥터는 맞춤 배치 외곽을 0.6m 확장한다',()=>{
+  const moduleIds=['airnok8Body','st'];
+  const direct={options:{},fitPositions:{airnok8Body:{x:1,y:1,rotated:false},st:{x:3.5,y:1,rotated:false}}};
+  const directSnap=snapDockingPlacement('st',moduleIds,catalog,direct);
+  assert.equal(directSnap.position.x,3.3);direct.fitPositions.st=directSnap.position;
+  const expanded={options:{airnok8Connector:1},fitPositions:{airnok8Body:{x:1,y:1,rotated:false},st:{x:3.7,y:1,rotated:false}}};
+  const expandedSnap=snapDockingPlacement('st',moduleIds,catalog,expanded);
+  assert.equal(expandedSnap.position.x,3.9);expanded.fitPositions.st=expandedSnap.position;
+  assert.ok(Math.abs(arrangementSummary(moduleIds,catalog,expanded).extent.length-arrangementSummary(moduleIds,catalog,direct).extent.length-.6)<1e-9);
+});
+test('6.4 측면 도킹은 커넥터를 선택해도 본체가 간격 없이 맞닿는다',()=>{
+  const moduleIds=['airnok6Body','tarp'];
+  const scenario={options:{airnok6Connector:1},fitPositions:{airnok6Body:{x:1,y:1,rotated:false},tarp:{x:1,y:3.5,rotated:false}}};
+  const snap=snapDockingPlacement('tarp',moduleIds,catalog,scenario);
+  assert.equal(snap.axis,'y');assert.equal(snap.gap,0);assert.equal(snap.position.y,3.3);
+});
+test('쿠디 8.0 배송비와 자동 조합명을 적용한다',()=>{
+  const result=evaluate({packages:['coody8Base'],options:{}});
+  assert.equal(result.lines.find(line=>line.category==='배송비').amount,20000);
+  assert.equal(result.total,1209000);
+  assert.equal(scenarioDisplayName({packages:['hubBase','coody10Base']},catalog),'쿠디 허브쉘터 PRO + 쿠디 10.0 PRO');
 });

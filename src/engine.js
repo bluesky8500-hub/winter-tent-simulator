@@ -10,6 +10,17 @@ export function adoptedClaim(subject,field='price',data=activeCatalog){
   return adoption?data.claims.find(x=>x.id===adoption.claimId):null;
 }
 
+export function scenarioDisplayName(scenario,data=activeCatalog){
+  const productIds=[];
+  for(const packageId of scenario.packages||[]){
+    const item=byId(data.packages,packageId);
+    const productId=item?.modules.map(id=>byId(data.modules,id)?.product).find(Boolean);
+    if(productId&&!productIds.includes(productId))productIds.push(productId);
+  }
+  const names=productIds.map(id=>byId(data.products,id)).filter(Boolean).map(product=>`${product.brand} ${product.name}`);
+  return names.join(' + ')||'새 조합';
+}
+
 export function evaluate(scenario,data=activeCatalog){
   const errors=[],warnings=[],lines=[];
   const packageIds=unique(scenario.packages||[]);
@@ -39,12 +50,19 @@ export function evaluate(scenario,data=activeCatalog){
     warnings.push('SKY 교체 시 포함품·도킹 외곽은 미확인입니다.');
   }
   moduleIds=unique(moduleIds);
-  if(packageIds.length>1&&!data.dockingRules.some(r=>r.status==='확정'&&r.modules.every(id=>moduleIds.includes(id)))) errors.push('이 패키지 조합의 도킹 호환성은 확인되지 않았습니다.');
+  const activeDockingRules=data.dockingRules.filter(r=>r.modules.every(id=>moduleIds.includes(id)));
+  const packageModuleSets=chosenPackages.filter(Boolean).map(item=>new Set(item.modules));
+  let incompatiblePackages=false;
+  for(let i=0;i<packageModuleSets.length;i++)for(let j=i+1;j<packageModuleSets.length;j++)if(!data.dockingRules.some(rule=>rule.status==='확정'&&rule.modules.some(id=>packageModuleSets[i].has(id))&&rule.modules.some(id=>packageModuleSets[j].has(id))))incompatiblePackages=true;
+  if(packageIds.length>1&&incompatiblePackages) errors.push('이 패키지 조합의 도킹 호환성은 확인되지 않았습니다.');
+  else if(activeDockingRules.some(r=>r.status!=='확정')) errors.push('선택한 모듈 중 도킹 정보가 미확인인 조합이 있습니다.');
   const packageProducts=unique(chosenPackages.filter(Boolean).flatMap(p=>p.modules.map(id=>byId(data.modules,id)?.product).filter(Boolean)));
   for(const [id,qty] of selectedEntries){
     const option=byId(data.options,id); if(!option)continue;
     const target=option.target;
-    const valid= target==='coodyDock' ? packageIds.includes('hubBase')&&packageIds.includes('coody10Base') :
+    const valid= id==='airnok6Connector' ? packageIds.includes('airnok6Base')&&packageIds.includes('happyBase') :
+      id==='airnok8Connector' ? packageIds.includes('airnok8Base')&&packageIds.includes('happyBase') :
+      target==='coodyDock' ? packageIds.includes('hubBase')&&packageIds.includes('coody10Base') :
       target==='coody8Dock' ? packageIds.includes('coody8Base')&&packageIds.length>1 :
       target==='coodyProStandard' ? packageProducts.some(p=>['hub','coody10','familia'].includes(p)) :
       target==='airnokShared' ? packageProducts.some(p=>['happy','airnok6','airnok8'].includes(p)) :
@@ -92,10 +110,12 @@ function line(subject,name,category,quantity,data){
 export function assessDocking(moduleIds,data=activeCatalog,selected={}){
   const rules=data.dockingRules.filter(r=>r.modules.every(id=>moduleIds.includes(id)));
   if(!rules.length) return {status:'해당 없음',rules:[]};
-  const rule=rules.find(r=>r.id==='airnok6Tarp'&&moduleIds.includes('airnok6Body'))||rules.find(r=>r.id.startsWith('airnok8')&&moduleIds.includes('airnok8Body'))||rules.find(r=>r.id.startsWith('coody8')&&moduleIds.includes('coody8Body'))||rules[0];
-  const required=rule.connectorRequired===false?null:{coodyDock:'proConnector',coody8Hub:'coody8Connector',coody8Ten:'coody8Connector',coody8Familia:'coody8Connector',airnok6Tarp:'airnok6Connector'}[rule.id];
-  if(required&&!selected[required]) return {status:'커넥터 미선택',ruleId:rule.id,connector:rule.connector,note:`${required} 선택이 필요합니다.`};
-  return {status:rule.status,ruleId:rule.id,connector:rule.connector,note:rule.note};
+  const confirmed=rules.filter(rule=>rule.status==='확정');
+  const missing=confirmed.find(rule=>rule.connectorRequirement==='required'&&rule.connector&&!selected[rule.connector]);
+  if(missing)return {status:'커넥터 미선택',ruleId:missing.id,connector:missing.connector,rules,note:`${byId(data.options,missing.connector)?.name||missing.connector} 선택이 필요합니다.`};
+  if(confirmed.length&&rules.some(rule=>rule.status!=='확정'))return {status:'일부 미확인',rules,note:rules.map(rule=>rule.note).join(' / ')};
+  const rule=confirmed.find(r=>r.id==='airnok6Tarp')||confirmed.find(r=>r.id.startsWith('airnok8'))||confirmed.find(r=>r.id.startsWith('coody8'))||confirmed[0]||rules[0];
+  return {status:rule.status,ruleId:rule.id,connector:rule.connector,rules,note:rule.note};
 }
 
 export function assessLayout(packageIds,moduleIds,data=activeCatalog,site={length:10,width:7},scenario={}){

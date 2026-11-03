@@ -77,6 +77,38 @@ function connectorPlaceholder(box,depth){
   return {x:round(Math.min(SITE.length-thickness,box.x+box.length)),y:box.y,length:thickness,width:box.width,contact:box.width,depth};
 }
 
+const dockingAxis=(rule,scenario)=>{
+  const directionPlacement=scenario.fitPositions?.[rule.directionModule]||{};
+  const rotated=Boolean(directionPlacement.rotated);
+  return rule.directions?.includes('side')?(rotated?'x':'y'):(rotated?'y':'x');
+};
+
+export function dockingGap(rule,scenario){
+  return Number(scenario.options?.[rule.connector])>0&&Number.isFinite(rule.connectorGap)?rule.connectorGap:rule.directGap;
+}
+
+export function snapDockingPlacement(movingId,moduleIds,catalog,scenario,threshold=.35){
+  const present=new Set(moduleIds);
+  const moduleById=id=>catalog.modules.find(module=>module.id===id);
+  const candidates=[];
+  for(const rule of catalog.dockingRules.filter(item=>item.status==='확정'&&item.modules.includes(movingId)&&item.modules.every(id=>present.has(id))&&Number.isFinite(item.directGap))){
+    if(rule.connectorRequirement==='required'&&!scenario.options?.[rule.connector])continue;
+    const otherId=rule.modules.find(id=>id!==movingId),movingModule=moduleById(movingId),otherModule=moduleById(otherId);
+    if(!movingModule||!otherModule||!scenario.fitPositions?.[movingId]||!scenario.fitPositions?.[otherId])continue;
+    const moving=getPlacedBox(movingModule,scenario.fitPositions[movingId]),other=getPlacedBox(otherModule,scenario.fitPositions[otherId]);
+    const gap=dockingGap(rule,scenario),axis=dockingAxis(rule,scenario);
+    const placements=axis==='x'?
+      [{x:other.x-moving.length-gap,y:other.y+(other.width-moving.width)/2},{x:other.x+other.length+gap,y:other.y+(other.width-moving.width)/2}]:
+      [{x:other.x+(other.length-moving.length)/2,y:other.y-moving.width-gap},{x:other.x+(other.length-moving.length)/2,y:other.y+other.width+gap}];
+    for(const placement of placements){
+      const x=round(clamp(placement.x,0,SITE.length-moving.length)),y=round(clamp(placement.y,0,SITE.width-moving.width));
+      candidates.push({rule,otherId,gap,axis,position:{x,y,rotated:moving.rotated},distance:Math.hypot(x-moving.x,y-moving.y)});
+    }
+  }
+  candidates.sort((a,b)=>a.distance-b.distance);
+  return candidates[0]?.distance<=threshold?candidates[0]:null;
+}
+
 export function arrangementSummary(moduleIds,catalog,scenario){
   const modules=moduleIds.map(id=>catalog.modules.find(x=>x.id===id));
   const unknown=modules.filter(x=>!Number.isFinite(x?.width)||!Number.isFinite(x?.length)).map(x=>x?.name||'미등록 모듈');
@@ -124,9 +156,10 @@ export function renderFitBoard(container,moduleIds,catalog,scenario,onChange=()=
   }
   let selected=scenario.fitSelected&&modules.some(x=>x.id===scenario.fitSelected)?scenario.fitSelected:modules[0].id;
   scenario.fitSelected=selected;
-  container.innerHTML=`<div class="fit-toolbar"><span class="badge">${group?'조합 전체 이동':'모듈 위치 정하기'}</span>${group?'':`<div><button class="ghost" type="button" data-fit-rotate>90° 회전</button><button class="ghost" type="button" data-fit-reset>초기 배치</button></div>`}</div><div class="fit-site" data-fit-site aria-label="10m × 7m 텐트 배치판">${modules.map((module,index)=>`<button type="button" class="fit-tent ${/connector/i.test(module.id)?'fit-connector-module':''}" data-fit-id="${esc(module.id)}" style="--fit-color:${index%6}" aria-label="${esc(module.name)} ${group?'조합 이동':'이동'}"><span>${esc(module.name)}</span><small></small></button>`).join('')}${connectors.map(id=>`<div class="fit-connector-contact" data-connector-id="${esc(id)}"></div>`).join('')}</div><div class="fit-readout" data-fit-readout></div><p class="small fit-help">${group?'배치 전체를 드래그해 위치를 옮기세요. 01에서 모듈별 위치와 방향을 조정할 수 있습니다.':'본체와 기본 연결부를 움직여 배치하세요. 옵션 커넥터는 연결할 두 모듈을 아래에서 선택할 수 있습니다.'} 확인되지 않은 커넥터 치수는 설치 면적에 합산하지 않습니다.</p>${unknown.length?`<p class="small">치수 미확인으로 제외: ${esc(unknown.map(x=>x.name).join(' · '))}</p>`:''}`;
+  container.innerHTML=`<div class="fit-toolbar"><span class="badge">${group?'조합 전체 이동':'모듈 위치 정하기'}</span>${group?'':`<div><button class="ghost" type="button" data-fit-rotate>90° 회전</button><button class="ghost" type="button" data-fit-reset>초기 배치</button></div>`}</div><div class="fit-site" data-fit-site aria-label="10m × 7m 텐트 배치판">${modules.map((module,index)=>`<button type="button" class="fit-tent ${/connector/i.test(module.id)?'fit-connector-module':''}" data-fit-id="${esc(module.id)}" style="--fit-color:${index%6}" aria-label="${esc(module.name)} ${group?'조합 이동':'이동'}"><span>${esc(module.name)}</span><small></small></button>`).join('')}${connectors.map(id=>`<div class="fit-connector-contact" data-connector-id="${esc(id)}"></div>`).join('')}</div><div class="fit-readout" data-fit-readout></div>${group?'':'<div class="docking-guide" data-docking-guide></div>'}<p class="small fit-help">${group?'배치 전체를 드래그해 위치를 옮기세요. 01에서 모듈별 위치와 방향을 조정할 수 있습니다.':'모듈을 움직여 위치를 정하세요. 확인된 도킹 변 가까이에 놓으면 올바른 접촉 위치로 맞춰집니다.'}</p>${unknown.length?`<p class="small">치수 미확인으로 제외: ${esc(unknown.map(x=>x.name).join(' · '))}</p>`:''}`;
   const site=container.querySelector('[data-fit-site]');
   const readout=container.querySelector('[data-fit-readout]');
+  const dockingGuide=container.querySelector('[data-docking-guide]');
   const elements=new Map([...container.querySelectorAll('[data-fit-id]')].map(element=>[element.dataset.fitId,element]));
   const refresh=()=>{
     const boxes=modules.map(module=>getPlacedBox(module,scenario.fitPositions[module.id]));
@@ -144,7 +177,7 @@ export function renderFitBoard(container,moduleIds,catalog,scenario,onChange=()=
       const marker=container.querySelector(`[data-connector-id="${id}"]`);
       const rule=catalog.dockingRules.find(rule=>rule.connector===id&&rule.modules.every(moduleId=>boxes.some(box=>box.id===moduleId)));
       const pair=scenario.connectorLinks?.[id]?.every(Boolean)?scenario.connectorLinks[id]:rule?.modules||[];
-      const depth=['proConnector','coody8Connector'].includes(id)?0.1:null;
+      const depth=id==='airnok8Connector'?0.6:['proConnector','coody8Connector'].includes(id)?0.1:null;
       const first=boxes.find(x=>x.id===pair[0]),second=boxes.find(x=>x.id===pair[1]);
       const contact=connectorContact(first,second,depth);
       const preview=connectorPreview(first,second,depth);
@@ -155,6 +188,7 @@ export function renderFitBoard(container,moduleIds,catalog,scenario,onChange=()=
     }
     const box=boxes.find(x=>x.id===selected);const module=modules.find(x=>x.id===selected);const gap=edgeClearance(box);
     readout.innerHTML=`<strong>${esc(module.name)}</strong><div class="fit-gaps"><span>왼쪽 <b>${gap.left.toFixed(2)}m</b></span><span>오른쪽 <b>${gap.right.toFixed(2)}m</b></span><span>위 <b>${gap.top.toFixed(2)}m</b></span><span>아래 <b>${gap.bottom.toFixed(2)}m</b></span></div>${overlaps.size?'<div class="fit-alert">텐트 본체가 서로 겹쳐 있습니다.</div>':'<div class="fit-ok">현재 본체끼리 겹치지 않습니다.</div>'}${contactNotes.length?`<p class="small">${contactNotes.join('<br>')}</p>`:''}`;
+    if(dockingGuide){const rules=catalog.dockingRules.filter(rule=>rule.modules.includes(selected));const directions={front:'전면',rear:'후면',side:'측면'};const requirements={required:'필수',optional:'선택',included:'기본 포함',unknown:'미확인'};dockingGuide.innerHTML=rules.length?`<strong>${esc(module.name)} 도킹 참고</strong>${rules.map(rule=>{const otherId=rule.modules.find(id=>id!==selected),other=catalog.modules.find(item=>item.id===otherId);const connector=catalog.options.find(item=>item.id===rule.connector)||catalog.modules.find(item=>item.id===rule.connector);const active=moduleIds.includes(otherId);const direction=rule.directions?.length?rule.directions.map(value=>directions[value]||value).join('·'):'방향 미확인';const requirement=requirements[rule.connectorRequirement]||'미확인';const effect=rule.connectorGap===.6?' · 사용 시 60cm 확장':'';const label=rule.status==='확정'?(active?'선택됨':'결합 가능'):'미확인';return `<div class="docking-guide-row ${rule.status==='확정'?'':'unknown'}"><span class="badge ${rule.status==='확정'?'':'uncertain'}">${label}</span><div><b>${esc(other?.name||otherId)}</b><small>${esc(direction)} · 커넥터 ${esc(requirement)}${connector?` (${esc(connector.name)})`:''}${effect}</small><small>${esc(rule.note)}</small></div></div>`}).join('')}`:'<strong>등록된 도킹 정보 없음</strong><p class="small">이 모듈과 결합 가능한 대상 정보가 아직 없습니다.</p>'}
   };
   const select=id=>{selected=id;scenario.fitSelected=id;refresh()};
   for(const [id,element] of elements){
@@ -169,7 +203,7 @@ export function renderFitBoard(container,moduleIds,catalog,scenario,onChange=()=
         else scenario.fitPositions[id]={x:round(clamp(start.x+dx,0,SITE.length-box.length)),y:round(clamp(start.y+dy,0,SITE.width-box.width)),rotated:start.rotated};
         refresh();onChange(false);
       };
-      const end=()=>{element.removeEventListener('pointermove',move);element.removeEventListener('pointerup',end);element.removeEventListener('pointercancel',end)};
+      const end=()=>{const snap=group?null:snapDockingPlacement(id,moduleIds,catalog,scenario);if(snap){scenario.fitPositions[id]=snap.position;if(snap.rule.connector&&scenario.options?.[snap.rule.connector]){scenario.connectorLinks??={};scenario.connectorPositions??={};scenario.connectorLinks[snap.rule.connector]=[id,snap.otherId];const moving=getPlacedBox(modules.find(x=>x.id===id),scenario.fitPositions[id]),other=getPlacedBox(modules.find(x=>x.id===snap.otherId),scenario.fitPositions[snap.otherId]);scenario.connectorPositions[snap.rule.connector]={x:round((Math.max(moving.x,other.x)+Math.min(moving.x+moving.length,other.x+other.length))/2),y:round((Math.max(moving.y,other.y)+Math.min(moving.y+moving.width,other.y+other.width))/2)}}refresh();onChange(true)}element.removeEventListener('pointermove',move);element.removeEventListener('pointerup',end);element.removeEventListener('pointercancel',end)};
       element.addEventListener('pointermove',move);element.addEventListener('pointerup',end);element.addEventListener('pointercancel',end);
     });
     element.addEventListener('click',()=>select(id));

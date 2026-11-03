@@ -1217,6 +1217,16 @@
       "condition": "합배송 조건 확인 필요"
     },
     {
+      "id": "user20261103_shipping_coody8Base",
+      "subject": "coody8Base",
+      "field": "shipping",
+      "value": 20000,
+      "source": "user20261103",
+      "locator": "대화 확인",
+      "status": "확정",
+      "condition": "텐트 배송비"
+    },
+    {
       "id": "happyShipping",
       "subject": "happyBase",
       "field": "shipping",
@@ -1658,6 +1668,14 @@
       "adoptedAt": "2026-11-03"
     },
     {
+      "subject": "coody8Base",
+      "field": "shipping",
+      "claimId": "user20261103_shipping_coody8Base",
+      "reason": "사용자 2026-11-03 직접 확인",
+      "condition": "텐트 배송비 20,000원",
+      "adoptedAt": "2026-11-03"
+    },
+    {
       "subject": "coody8Carpet",
       "field": "price",
       "claimId": "user20261103_price_coody8Carpet",
@@ -1930,6 +1948,8 @@
         "tarp"
       ],
       "connector": "happyConnector",
+      "connectorRequirement": "included",
+      "directions": [],
       "status": "확정",
       "source": "happyPdf",
       "note": "해피패밀리 세트 구성. SKY 교체 후 도킹 외곽은 미확인"
@@ -1941,6 +1961,8 @@
         "sky"
       ],
       "connector": "happyConnector",
+      "connectorRequirement": "unknown",
+      "directions": [],
       "status": "미확인",
       "source": "master",
       "note": "SKY 변경 가격만 확인; 도킹 방식과 외곽 미확인"
@@ -1952,6 +1974,11 @@
         "coody10Body"
       ],
       "connector": "proConnector",
+      "connectorRequirement": "required",
+      "directions": [
+        "front",
+        "rear"
+      ],
       "status": "확정",
       "source": "user20261103",
       "note": "정면/후면; 공용 PRO 커넥터; 명목 외곽 3.6×6.7m"
@@ -1963,6 +1990,11 @@
         "hubBody"
       ],
       "connector": "coody8Connector",
+      "connectorRequirement": "required",
+      "directions": [
+        "front",
+        "rear"
+      ],
       "status": "확정",
       "source": "user20261103",
       "note": "정면/후면; 8.0 PRO 전용 커넥터; 완성 외곽 미확인"
@@ -1974,6 +2006,11 @@
         "coody10Body"
       ],
       "connector": "coody8Connector",
+      "connectorRequirement": "required",
+      "directions": [
+        "front",
+        "rear"
+      ],
       "status": "확정",
       "source": "user20261103",
       "note": "정면/후면; 8.0 PRO 전용 커넥터; 완성 외곽 미확인"
@@ -1985,6 +2022,11 @@
         "familiaBody"
       ],
       "connector": "coody8Connector",
+      "connectorRequirement": "required",
+      "directions": [
+        "front",
+        "rear"
+      ],
       "status": "확정",
       "source": "user20261103",
       "note": "정면/후면; 8.0 PRO 전용 커넥터; 완성 외곽 미확인"
@@ -1996,9 +2038,16 @@
         "tarp"
       ],
       "connector": "airnok6Connector",
+      "connectorRequirement": "required",
+      "directions": [
+        "side"
+      ],
+      "directionModule": "airnok6Body",
+      "directGap": 0,
+      "connectorGap": 0,
       "status": "확정",
       "source": "user20261103",
-      "note": "측면 도킹만 확인; 완성 외곽 미확인"
+      "note": "측면 도킹만 가능; 전용 커넥터 필수; 커넥터 폭을 더하지 않고 두 본체가 맞닿는 구조"
     },
     {
       "id": "airnok8St",
@@ -2009,9 +2058,17 @@
       "connector": "airnok8Connector",
       "connectorRequired": false,
       "connectorRequirementSource": "user20261103Direct",
+      "connectorRequirement": "optional",
+      "directions": [
+        "front",
+        "rear"
+      ],
+      "directionModule": "airnok8Body",
+      "directGap": 0,
+      "connectorGap": 0.6,
       "status": "확정",
       "source": "user20261103",
-      "note": "8.0T와 ST는 커넥터 없이 도킹 가능 (사용자 확인). 전면/후면; 완성 외곽 미확인"
+      "note": "전면/후면 직접 도킹; 전용 커넥터는 선택품이며 사용 시 내부와 배치 외곽이 0.6m 확장"
     },
     {
       "id": "airnok8Tarp",
@@ -2022,9 +2079,43 @@
       "connector": "airnok8Connector",
       "connectorRequired": false,
       "connectorRequirementSource": "user20261103Direct",
+      "connectorRequirement": "optional",
+      "directions": [
+        "front",
+        "rear"
+      ],
+      "directionModule": "airnok8Body",
+      "directGap": 0,
+      "connectorGap": 0.6,
       "status": "확정",
       "source": "user20261103",
-      "note": "8.0T와 타프쉘터는 커넥터 없이 도킹 가능 (사용자 확인). 전면/후면; 완성 외곽 미확인"
+      "note": "전면/후면 직접 도킹; 전용 커넥터는 선택품이며 사용 시 내부와 배치 외곽이 0.6m 확장"
+    },
+    {
+      "id": "coodyFamiliaHubUnknown",
+      "modules": [
+        "familiaBody",
+        "hubBody"
+      ],
+      "connector": null,
+      "connectorRequirement": "unknown",
+      "directions": [],
+      "status": "미확인",
+      "source": "user20261103",
+      "note": "도킹 가능 여부, 결합 방향, 커넥터 필요 여부 확인 필요"
+    },
+    {
+      "id": "coodyFamiliaTenUnknown",
+      "modules": [
+        "familiaBody",
+        "coody10Body"
+      ],
+      "connector": null,
+      "connectorRequirement": "unknown",
+      "directions": [],
+      "status": "미확인",
+      "source": "user20261103",
+      "note": "도킹 가능 여부, 결합 방향, 커넥터 필요 여부 확인 필요"
     }
   ],
   "footprints": [
