@@ -93,7 +93,7 @@ export function assessDocking(moduleIds,data=activeCatalog,selected={}){
   const rules=data.dockingRules.filter(r=>r.modules.every(id=>moduleIds.includes(id)));
   if(!rules.length) return {status:'해당 없음',rules:[]};
   const rule=rules.find(r=>r.id==='airnok6Tarp'&&moduleIds.includes('airnok6Body'))||rules.find(r=>r.id.startsWith('airnok8')&&moduleIds.includes('airnok8Body'))||rules.find(r=>r.id.startsWith('coody8')&&moduleIds.includes('coody8Body'))||rules[0];
-  const required={coodyDock:'proConnector',coody8Hub:'coody8Connector',coody8Ten:'coody8Connector',coody8Familia:'coody8Connector',airnok6Tarp:'airnok6Connector',airnok8St:'airnok8Connector',airnok8Tarp:'airnok8Connector'}[rule.id];
+  const required=rule.connectorRequired===false?null:{coodyDock:'proConnector',coody8Hub:'coody8Connector',coody8Ten:'coody8Connector',coody8Familia:'coody8Connector',airnok6Tarp:'airnok6Connector'}[rule.id];
   if(required&&!selected[required]) return {status:'커넥터 미선택',ruleId:rule.id,connector:rule.connector,note:`${required} 선택이 필요합니다.`};
   return {status:rule.status,ruleId:rule.id,connector:rule.connector,note:rule.note};
 }

@@ -5,3 +5,4 @@
 .fit-connector{position:absolute;transform:translate(-50%,-50%);z-index:4;background:#253e57;color:#fff;border:2px solid #fff;border-radius:999px;min-width:38px;min-height:38px;padding:5px;font-size:10px;font-weight:800;box-shadow:0 2px 7px #18344788;cursor:grab;touch-action:none}.fit-preview .fit-connector{cursor:default;pointer-events:none}
 .fit-connector-contact{position:absolute;z-index:4;background:#253e57;border:1px solid #fff;min-width:3px;min-height:3px;pointer-events:none;box-shadow:0 1px 4px #18344788}.fit-connector-contact[hidden]{display:none}
 .fit-connector-contact.unplaced{background:repeating-linear-gradient(0deg,#253e57 0 5px,#fff 5px 9px);opacity:.75}.fit-tent.fit-connector-module{background:#6f83a3;border-color:#253e57;color:#fff}
+.option-note{margin:0;padding:11px 12px;border:1px solid #b9d8ca;border-radius:9px;background:#eaf5f0;color:#245a4a;font-size:12px;line-height:1.5}

@@ -48,6 +48,10 @@
     "user20261103": {
       "label": "판매페이지 PDF (원본 비공개)",
       "kind": "사용자 직접 확인"
+    },
+    "user20261103Direct": {
+      "label": "사용자 직접 확인 (2026-11-03)",
+      "kind": "사용자 직접 확인"
     }
   },
   "products": [
@@ -2003,9 +2007,11 @@
         "st"
       ],
       "connector": "airnok8Connector",
+      "connectorRequired": false,
+      "connectorRequirementSource": "user20261103Direct",
       "status": "확정",
       "source": "user20261103",
-      "note": "전면/후면; 완성 외곽 미확인"
+      "note": "8.0T와 ST는 커넥터 없이 도킹 가능 (사용자 확인). 전면/후면; 완성 외곽 미확인"
     },
     {
       "id": "airnok8Tarp",
@@ -2014,9 +2020,11 @@
         "tarp"
       ],
       "connector": "airnok8Connector",
+      "connectorRequired": false,
+      "connectorRequirementSource": "user20261103Direct",
       "status": "확정",
       "source": "user20261103",
-      "note": "전면/후면; 완성 외곽 미확인"
+      "note": "8.0T와 타프쉘터는 커넥터 없이 도킹 가능 (사용자 확인). 전면/후면; 완성 외곽 미확인"
     }
   ],
   "footprints": [

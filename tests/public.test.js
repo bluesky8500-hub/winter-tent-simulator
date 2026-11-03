@@ -20,6 +20,19 @@ test('정적 JSON에서 신규 배송비와 도킹 치수를 적용한다',()=>{
   assert.equal(coody.knownSubtotal,3370000);assert.equal(coody.docking.status,'확정');assert.equal(coody.layout.footprint.length,6.7);
   assert.equal(evaluate({packages:['happyBase'],options:{skySwap:1}}).lines.find(x=>x.subject==='skySwap').amount,280000);
 });
+test('에어노크 8.0T 도킹은 전용 커넥터를 필수로 요구하지 않는다',()=>{
+  const rules=catalog.dockingRules.filter(rule=>rule.id==='airnok8St'||rule.id==='airnok8Tarp');
+  assert.equal(rules.length,2);
+  assert.ok(rules.every(rule=>rule.connectorRequired===false&&rule.connectorRequirementSource==='user20261103Direct'));
+  const without=evaluate({packages:['happyBase','airnok8Base'],options:{}});
+  assert.equal(without.docking.status,'확정');
+  assert.ok(!without.errors.some(error=>error.includes('도킹')));
+  assert.ok(!without.lines.some(line=>line.subject==='airnok8Connector'));
+  assert.equal(without.layout.footprint,null);
+  const withOption=evaluate({packages:['happyBase','airnok8Base'],options:{airnok8Connector:1}});
+  assert.equal(withOption.docking.status,'확정');
+  assert.ok(withOption.lines.some(line=>line.subject==='airnok8Connector'));
+});
 test('조합 파일은 공유되고 미등록 제품·옵션은 거부한다',()=>{
   const current={name:'공유 조합',packages:['campBase'],options:{campSide:2},fitPositions:{campBody:{x:1.2,y:.5,rotated:false}},fitSelected:'campBody'};
   const data=decodeScenarioFile(encodeScenarioFile(current,[current]),catalog);
