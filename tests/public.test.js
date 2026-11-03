@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {configureCatalog,evaluate} from '../src/engine.js';
 import {encodeScenarioFile,decodeScenarioFile} from '../src/scenario-file.js';
-import {boxesOverlap,edgeClearance,getPlacedBox,arrangementSummary,connectorContact} from '../src/fit-board.js';
+import {boxesOverlap,edgeClearance,getPlacedBox,arrangementSummary,connectorContact,connectorIds,moveGroup} from '../src/fit-board.js';
 
 const catalog=JSON.parse(readFileSync(new URL('../deploy-source/catalog.public.json',import.meta.url)));
 configureCatalog(catalog);
@@ -48,4 +48,14 @@ test('연결 표시는 두 본체의 마주 보는 구간을 따르고 폭이 �
   assert.deepEqual(connectorContact(a,b,0.1),{x:3.6,y:0.4,length:0.1,width:3.4,contact:3.4,depth:0.1});
   assert.equal(connectorContact(a,{...b,y:4},null),null);
   assert.equal(connectorContact(a,b,null)?.depth,null);
+});
+test('03에서 배치 전체를 움직여도 모듈 간 상대 위치가 유지된다',()=>{
+  const boxes=[{id:'a',x:1,y:1,length:3,width:2,rotated:false},{id:'b',x:4.1,y:1,length:2,width:2,rotated:true}];
+  assert.deepEqual(moveGroup(boxes,2,1).map(x=>[x.x,x.y,x.rotated]),[[3,2,false],[6.1,2,true]]);
+  assert.deepEqual(moveGroup(boxes,20,20).map(x=>[x.x,x.y]),[[4.9,5],[8,5]]);
+});
+test('기본 포함 연결부와 선택 옵션 커넥터를 모두 배치 대상으로 찾는다',()=>{
+  assert.deepEqual(connectorIds({packages:['happyBase'],options:{}},catalog),['happyConnector']);
+  assert.deepEqual(connectorIds({packages:['hubBase','coody10Base'],options:{proConnector:1}},catalog),['proConnector']);
+  assert.equal(catalog.modules.find(m=>m.id==='happyConnector').length,0.6);
 });

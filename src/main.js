@@ -1,6 +1,6 @@
 import {evaluate,won,compareQuote,configureCatalog} from './engine.js';
 import {encodeScenarioFile,decodeScenarioFile} from './scenario-file.js';
-import {renderFitBoard,arrangementSummary} from './fit-board.js';
+import {renderFitBoard,arrangementSummary,connectorIds} from './fit-board.js';
 
 const response=await fetch(new URL('../catalog.json',import.meta.url));
 if(!response.ok)throw new Error(`공개 카탈로그를 불러오지 못했습니다: ${response.status}`);
@@ -28,21 +28,20 @@ function contents(s){
   if(s.packages.includes('airnok8Base')&&s.color==='그레이카키')included.push(catalog.options.find(x=>x.id==='airnok8GrayFly'));
   return {included:included.filter(Boolean),gifts};
 }
-function connectorIds(s){return Object.keys(s.options||{}).filter(id=>s.options[id]>0&&/connector/i.test(id))}
 function renderConnectorPlacement(r){
-  const ids=connectorIds(scenario),modules=r.modules.map(id=>catalog.modules.find(m=>m.id===id)).filter(Boolean);
-  $('connectorPlacement').innerHTML=ids.length?`<div class="label">커넥터 연결 위치</div>${ids.map(id=>{const o=catalog.options.find(x=>x.id===id);const selected=scenario.connectorLinks?.[id]||[];const choices=modules.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('');return `<div class="connector-row"><strong>${esc(o?.name||id)}</strong><label>첫 모듈<select data-link="${esc(id)}" data-end="0"><option value="">선택</option>${choices}</select></label><label>둘째 모듈<select data-link="${esc(id)}" data-end="1"><option value="">선택</option>${choices}</select></label></div>`}).join('')}<p class="small">연결 대상을 기록합니다. 커넥터의 전체 설치 치수가 확인되지 않으면 면적에 합산하지 않습니다.</p>`:'';
+  const ids=connectorIds(scenario,catalog),modules=r.modules.map(id=>catalog.modules.find(m=>m.id===id)).filter(m=>m&&!/connector/i.test(m.id));
+  $('connectorPlacement').innerHTML=ids.length?`<div class="label">커넥터 연결 위치</div>${ids.map(id=>{const o=catalog.options.find(x=>x.id===id)||catalog.modules.find(x=>x.id===id);const choices=modules.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('');return `<div class="connector-row"><strong>${esc(o?.name||id)}</strong><label>첫 모듈<select data-link="${esc(id)}" data-end="0"><option value="">선택</option>${choices}</select></label><label>둘째 모듈<select data-link="${esc(id)}" data-end="1"><option value="">선택</option>${choices}</select></label></div>`}).join('')}<p class="small">연결 대상을 기록합니다. 커넥터의 전체 설치 치수가 확인되지 않으면 면적에 합산하지 않습니다.</p>`:'';
   for(const select of $('connectorPlacement').querySelectorAll('[data-link]')){
-    select.value=scenario.connectorLinks?.[select.dataset.link]?.[Number(select.dataset.end)]||'';
+    select.value=scenario.connectorLinks?.[select.dataset.link]?.[Number(select.dataset.end)]||catalog.dockingRules.find(rule=>rule.connector===select.dataset.link&&rule.modules.every(id=>modules.some(module=>module.id===id)))?.modules[Number(select.dataset.end)]||'';
     select.onchange=()=>{scenario.connectorLinks??={};const pair=scenario.connectorLinks[select.dataset.link]||['',''];pair[Number(select.dataset.end)]=select.value;scenario.connectorLinks[select.dataset.link]=pair;renderFitBoard($('buildLayout'),r.modules,catalog,scenario,()=>renderLayout(r));renderLayout(r)};
   }
 }
 function renderLayout(r){
   const summary=arrangementSummary(r.modules,catalog,scenario),f=summary.extent;
   if(!f){$('layout').innerHTML='<span class="badge uncertain">배치 치수 미확인</span>';return}
-  const links=connectorIds(scenario).map(id=>{const pair=scenario.connectorLinks?.[id]||[];return `${catalog.options.find(x=>x.id===id)?.name||id}: ${pair.map(x=>catalog.modules.find(m=>m.id===x)?.name||'미지정').join(' ↔ ')}`});
+  const links=connectorIds(scenario,catalog).map(id=>{const pair=scenario.connectorLinks?.[id]||catalog.dockingRules.find(rule=>rule.connector===id&&rule.modules.every(moduleId=>r.modules.includes(moduleId)))?.modules||[];return `${catalog.options.find(x=>x.id===id)?.name||catalog.modules.find(x=>x.id===id)?.name||id}: ${pair.map(x=>catalog.modules.find(m=>m.id===x)?.name||'미지정').join(' ↔ ')}`});
   $('layout').innerHTML=`<span class="badge ${summary.unknown.length?'uncertain':''}">${summary.unknown.length?'일부 본체 치수 미확인':'확정한 본체 배치'}</span><div id="reviewBoard"></div><p><strong>본체 배치 외곽 ${f.length.toFixed(2)} × ${f.width.toFixed(2)}m · ${f.area.toFixed(2)}㎡</strong></p><p class="small">10 × 7m 사이트: ${f.fits?'본체 치수 기준 내부':'본체가 사이트 경계를 넘음'}${summary.overlap?' · 본체 겹침':''}. 외곽 면적은 빈 공간을 포함한 경계 사각형입니다.</p>${links.length?`<p class="small">커넥터 연결: ${esc(links.join(' / '))}</p><p class="small">커넥터 설치 면적은 전체 치수 미확인으로 외곽에 포함되지 않았습니다.</p>`:''}${summary.unknown.length?`<p class="small">치수 미확인: ${esc(summary.unknown.join(' · '))}</p>`:''}<p class="small">가이라인·차량·동선·팩다운 여유는 미확인입니다. 실제 설치 가능 판정은 보류합니다.</p>`;
-  renderFitBoard($('reviewBoard'),r.modules,catalog,scenario,completed=>{renderFitBoard($('buildLayout'),r.modules,catalog,scenario,()=>renderLayout(r));if(completed)renderLayout(r)});
+  renderFitBoard($('reviewBoard'),r.modules,catalog,scenario,completed=>{renderFitBoard($('buildLayout'),r.modules,catalog,scenario,()=>renderLayout(r));if(completed)renderLayout(r)},{group:true});
   $('reviewBoard').addEventListener('pointerup',()=>renderLayout(r));
 }
 function renderControls(){
