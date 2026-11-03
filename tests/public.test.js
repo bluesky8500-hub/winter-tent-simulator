@@ -9,7 +9,7 @@ const catalog=JSON.parse(readFileSync(new URL('../deploy-source/catalog.public.j
 configureCatalog(catalog);
 
 test('공개 스냅샷에는 채택 가격만 있고 원본 경로가 없다',()=>{
-  assert.equal(catalog.products.length,8);
+  assert.equal(catalog.products.length,9);
   assert.ok(catalog.claims.every(x=>catalog.adoptions.some(a=>a.claimId===x.id)));
   assert.ok(!/(?:\.sqlite|\.pdf|\.xlsx|data\/|legacy\/|C:\\)/i.test(JSON.stringify(catalog)));
 });
@@ -40,6 +40,31 @@ test('에어노크 8.0T 도킹은 전용 커넥터를 필수로 요구하지 않
   const withOption=evaluate({packages:['happyBase','airnok8Base'],options:{airnok8Connector:1}});
   assert.equal(withOption.docking.status,'확정');
   assert.ok(withOption.lines.some(line=>line.subject==='airnok8Connector'));
+});
+test('에어노크 7.0T 가격·옵션·배송비를 선택한 항목만 계산한다',()=>{
+  const base=evaluate({packages:['airnok7Base'],options:{}});
+  assert.equal(base.total,595000);
+  assert.ok(!base.lines.some(line=>line.subject==='airnok7FullFly'));
+  const all=evaluate({packages:['airnok7Base'],options:{airnok7Connector:1,airnok7Ground:1,airnok7FullFly:1}});
+  assert.equal(all.total,882000);
+  assert.equal(all.lines.find(line=>line.subject==='airnok7FullFly').amount,129000);
+});
+test('에어노크 7.0T 도킹 방향과 미확인 외곽을 보존한다',()=>{
+  const st=catalog.dockingRules.find(rule=>rule.id==='airnok7St');
+  const tarp=catalog.dockingRules.find(rule=>rule.id==='airnok7Tarp');
+  assert.deepEqual(st.directions,['front']);
+  assert.deepEqual(tarp.directions,['front','rear']);
+  assert.equal(st.connectorRequirement,'required');
+  assert.equal(evaluate({packages:['happyBase','airnok7Base'],options:{}}).docking.status,'커넥터 미선택');
+  assert.equal(evaluate({packages:['happyBase','airnok7Base'],options:{airnok7Connector:1}}).docking.status,'확정');
+  assert.ok(!catalog.footprints.some(item=>item.key==='airnok7St'||item.key==='airnok7Tarp'));
+});
+test('에어노크 7.0T 충돌과 M블랙 버전 차이를 추정 없이 표시한다',()=>{
+  const spec=catalog.specs.find(item=>item.product==='airnok7');
+  assert.ok(spec.weight.includes('16.5kg')&&spec.weight.includes('16.8kg'));
+  const mblack=catalog.verification.find(item=>item.id==='PDF-AIRNOK7-MBLACK');
+  assert.ok(mblack.issue.includes('기존')&&mblack.issue.includes('도킹 불가')&&mblack.issue.includes('개선형'));
+  assert.equal(catalog.options.find(item=>item.id==='airnok7FullFly').kind,'paid');
 });
 test('조합 파일은 공유되고 미등록 제품·옵션은 거부한다',()=>{
   const current={name:'공유 조합',packages:['campBase'],options:{campSide:2},fitPositions:{campBody:{x:1.2,y:.5,rotated:false}},fitSelected:'campBody'};

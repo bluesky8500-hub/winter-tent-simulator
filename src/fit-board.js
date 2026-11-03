@@ -112,7 +112,9 @@ export function snapDockingPlacement(movingId,moduleIds,catalog,scenario,thresho
     const otherModule=moduleById(otherId);
     if(!otherModule||!scenario.fitPositions?.[otherId])continue;
     const other=getPlacedBox(otherModule,scenario.fitPositions[otherId]);
-    const rule=catalog.dockingRules.find(item=>item.status==='확정'&&item.modules.includes(movingId)&&item.modules.includes(otherId)&&Number.isFinite(item.directGap))||null;
+    const compatibleRule=catalog.dockingRules.find(item=>item.status==='확정'&&item.modules.includes(movingId)&&item.modules.includes(otherId))||null;
+    const rule=compatibleRule&&Number.isFinite(compatibleRule.directGap)?compatibleRule:null;
+    if(compatibleRule&&!rule)continue;
     const gap=rule?dockingGap(rule,scenario):0;
     const axes=rule?[dockingAxis(rule,scenario)]:['x','y'];
     const overlapX=Math.min(moving.x+moving.length,other.x+other.length)-Math.max(moving.x,other.x);
