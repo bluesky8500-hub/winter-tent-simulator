@@ -62,7 +62,7 @@ export function evaluate(scenario,data=activeCatalog){
     const target=option.target;
     const valid= id==='airnok6Connector' ? packageIds.includes('airnok6Base')&&packageIds.includes('happyBase') :
       id==='airnok8Connector' ? packageIds.includes('airnok8Base')&&packageIds.includes('happyBase') :
-      target==='coodyDock' ? packageIds.includes('hubBase')&&packageIds.includes('coody10Base') :
+      target==='coodyProConnector' ? packageProducts.some(p=>['hub','coody10','familia'].includes(p)) :
       target==='coody8Dock' ? packageIds.includes('coody8Base')&&packageIds.length>1 :
       target==='coodyProStandard' ? packageProducts.some(p=>['hub','coody10','familia'].includes(p)) :
       target==='airnokShared' ? packageProducts.some(p=>['happy','airnok6','airnok8'].includes(p)) :

@@ -20,6 +20,14 @@ test('정적 JSON에서 신규 배송비와 도킹 치수를 적용한다',()=>{
   assert.equal(coody.knownSubtotal,3370000);assert.equal(coody.docking.status,'확정');assert.equal(coody.layout.footprint.length,6.7);
   assert.equal(evaluate({packages:['happyBase'],options:{skySwap:1}}).lines.find(x=>x.subject==='skySwap').amount,280000);
 });
+test('PRO 공용 커넥터는 파밀리아 옵션에 같은 가격으로 적용된다',()=>{
+  const option=catalog.options.find(item=>item.id==='proConnector');
+  assert.equal(option.target,'coodyProConnector');assert.ok(option.condition.includes('파밀리아 PRO'));
+  const familia=evaluate({packages:['familiaBase'],options:{proConnector:1}});
+  assert.equal(familia.errors.length,0);
+  assert.equal(familia.lines.find(line=>line.subject==='proConnector').amount,62000);
+  assert.equal(familia.total,2182000);
+});
 test('에어노크 8.0T 도킹은 전용 커넥터를 필수로 요구하지 않는다',()=>{
   const rules=catalog.dockingRules.filter(rule=>rule.id==='airnok8St'||rule.id==='airnok8Tarp');
   assert.equal(rules.length,2);

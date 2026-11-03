@@ -529,8 +529,9 @@
       "id": "proConnector",
       "name": "PRO 커넥터",
       "kind": "paid",
-      "target": "coodyDock",
-      "max": 1
+      "target": "coodyProConnector",
+      "max": 1,
+      "condition": "파밀리아 PRO·허브쉘터 PRO·10.0 PRO 공용"
     },
     {
       "id": "coody10Ground",
