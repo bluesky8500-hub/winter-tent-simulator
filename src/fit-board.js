@@ -36,6 +36,19 @@ export function moveGroup(boxes,dx,dy,site=SITE){
   return boxes.map(box=>({...box,x:round(box.x+shiftX),y:round(box.y+shiftY)}));
 }
 
+export function rotateGroup(boxes,site=SITE){
+  if(!boxes.length)return [];
+  const minX=Math.min(...boxes.map(box=>box.x)),maxX=Math.max(...boxes.map(box=>box.x+box.length));
+  const minY=Math.min(...boxes.map(box=>box.y)),maxY=Math.max(...boxes.map(box=>box.y+box.width));
+  const centerX=(minX+maxX)/2,centerY=(minY+maxY)/2;
+  const rotated=boxes.map(box=>{
+    const boxCenterX=box.x+box.length/2,boxCenterY=box.y+box.width/2;
+    const nextCenterX=centerX+(boxCenterY-centerY),nextCenterY=centerY-(boxCenterX-centerX);
+    return {...box,x:round(nextCenterX-box.width/2),y:round(nextCenterY-box.length/2),length:box.width,width:box.length,rotated:!box.rotated};
+  });
+  return moveGroup(rotated,0,0,site);
+}
+
 export function connectorContact(a,b,depth=null){
   if(!a||!b)return null;
   const xGap=Math.max(a.x,b.x)-Math.min(a.x+a.length,b.x+b.length);
@@ -156,7 +169,7 @@ export function renderFitBoard(container,moduleIds,catalog,scenario,onChange=()=
   }
   let selected=scenario.fitSelected&&modules.some(x=>x.id===scenario.fitSelected)?scenario.fitSelected:modules[0].id;
   scenario.fitSelected=selected;
-  container.innerHTML=`<div class="fit-toolbar"><span class="badge">${group?'조합 전체 이동':'모듈 위치 정하기'}</span>${group?'':`<div><button class="ghost" type="button" data-fit-rotate>90° 회전</button><button class="ghost" type="button" data-fit-reset>초기 배치</button></div>`}</div><div class="fit-site" data-fit-site aria-label="10m × 7m 텐트 배치판">${modules.map((module,index)=>`<button type="button" class="fit-tent ${/connector/i.test(module.id)?'fit-connector-module':''}" data-fit-id="${esc(module.id)}" style="--fit-color:${index%6}" aria-label="${esc(module.name)} ${group?'조합 이동':'이동'}"><span>${esc(module.name)}</span><small></small></button>`).join('')}${connectors.map(id=>`<div class="fit-connector-contact" data-connector-id="${esc(id)}"></div>`).join('')}</div><div class="fit-readout" data-fit-readout></div>${group?'':'<div class="docking-guide" data-docking-guide></div>'}<p class="small fit-help">${group?'배치 전체를 드래그해 위치를 옮기세요. 01에서 모듈별 위치와 방향을 조정할 수 있습니다.':'모듈을 움직여 위치를 정하세요. 확인된 도킹 변 가까이에 놓으면 올바른 접촉 위치로 맞춰집니다.'}</p>${unknown.length?`<p class="small">치수 미확인으로 제외: ${esc(unknown.map(x=>x.name).join(' · '))}</p>`:''}`;
+  container.innerHTML=`<div class="fit-toolbar"><span class="badge">${group?'조합 전체 이동':'모듈 위치 정하기'}</span><div>${group?'<button class="ghost" type="button" data-fit-group-rotate>전체 90° 회전</button>':'<button class="ghost" type="button" data-fit-rotate>90° 회전</button><button class="ghost" type="button" data-fit-reset>초기 배치</button>'}</div></div><div class="fit-site" data-fit-site aria-label="10m × 7m 텐트 배치판">${modules.map((module,index)=>`<button type="button" class="fit-tent ${/connector/i.test(module.id)?'fit-connector-module':''}" data-fit-id="${esc(module.id)}" style="--fit-color:${index%6}" aria-label="${esc(module.name)} ${group?'조합 이동':'이동'}"><span>${esc(module.name)}</span><small></small></button>`).join('')}${connectors.map(id=>`<div class="fit-connector-contact" data-connector-id="${esc(id)}"></div>`).join('')}</div><div class="fit-readout" data-fit-readout></div>${group?'':'<div class="docking-guide" data-docking-guide></div>'}<p class="small fit-help">${group?'배치 전체를 드래그해 옮기거나 90° 회전하세요. 01에서 모듈별 위치와 방향을 조정할 수 있습니다.':'모듈을 움직여 위치를 정하세요. 확인된 도킹 변 가까이에 놓으면 올바른 접촉 위치로 맞춰집니다.'}</p>${unknown.length?`<p class="small">치수 미확인으로 제외: ${esc(unknown.map(x=>x.name).join(' · '))}</p>`:''}`;
   const site=container.querySelector('[data-fit-site]');
   const readout=container.querySelector('[data-fit-readout]');
   const dockingGuide=container.querySelector('[data-docking-guide]');
@@ -211,6 +224,7 @@ export function renderFitBoard(container,moduleIds,catalog,scenario,onChange=()=
   if(!group)container.querySelector('[data-fit-rotate]').onclick=()=>{
     const module=modules.find(x=>x.id===selected);const current=scenario.fitPositions[selected];current.rotated=!current.rotated;const box=getPlacedBox(module,current);current.x=round(clamp(current.x,0,Math.max(0,SITE.length-box.length)));current.y=round(clamp(current.y,0,Math.max(0,SITE.width-box.width)));refresh();onChange(true);
   };
+  if(group)container.querySelector('[data-fit-group-rotate]').onclick=()=>{const boxes=modules.map(module=>getPlacedBox(module,scenario.fitPositions[module.id]));for(const rotated of rotateGroup(boxes))scenario.fitPositions[rotated.id]={x:rotated.x,y:rotated.y,rotated:rotated.rotated};refresh();onChange(true)};
   if(!group)container.querySelector('[data-fit-reset]').onclick=()=>{const reset=autoPositions(defaultOrder);for(const module of modules)scenario.fitPositions[module.id]=reset[module.id];refresh();onChange(true)};
   refresh();
 }

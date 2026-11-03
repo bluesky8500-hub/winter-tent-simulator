@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {configureCatalog,evaluate,scenarioDisplayName} from '../src/engine.js';
 import {encodeScenarioFile,decodeScenarioFile} from '../src/scenario-file.js';
-import {boxesOverlap,edgeClearance,getPlacedBox,arrangementSummary,connectorContact,connectorIds,moveGroup,snapDockingPlacement} from '../src/fit-board.js';
+import {boxesOverlap,edgeClearance,getPlacedBox,arrangementSummary,connectorContact,connectorIds,moveGroup,rotateGroup,snapDockingPlacement} from '../src/fit-board.js';
 
 const catalog=JSON.parse(readFileSync(new URL('../deploy-source/catalog.public.json',import.meta.url)));
 configureCatalog(catalog);
@@ -67,6 +67,13 @@ test('03에서 배치 전체를 움직여도 모듈 간 상대 위치가 유지�
   assert.deepEqual(moveGroup(boxes,2,1).map(x=>[x.x,x.y,x.rotated]),[[3,2,false],[6.1,2,true]]);
   assert.deepEqual(moveGroup(boxes,20,20).map(x=>[x.x,x.y]),[[4.9,5],[8,5]]);
 });
+test('03에서 배치 전체를 90도 회전하고 사이트 안으로 보정한다',()=>{
+  const boxes=[{id:'a',x:1,y:1,length:3,width:2,rotated:false},{id:'b',x:4.1,y:1,length:2,width:2,rotated:true}];
+  const rotated=rotateGroup(boxes);
+  assert.deepEqual(rotated.map(x=>[x.id,x.length,x.width,x.rotated]),[['a',2,3,true],['b',2,2,false]]);
+  assert.ok(rotated.every(box=>box.x>=0&&box.y>=0&&box.x+box.length<=10&&box.y+box.width<=7));
+  assert.equal(Math.abs((rotated[0].y+rotated[0].width/2)-(rotated[1].y+rotated[1].width/2)),2.6);
+});
 test('기본 포함 연결부와 선택 옵션 커넥터를 모두 배치 대상으로 찾는다',()=>{
   assert.deepEqual(connectorIds({packages:['happyBase'],options:{}},catalog),['happyConnector']);
   assert.deepEqual(connectorIds({packages:['hubBase','coody10Base'],options:{proConnector:1}},catalog),['proConnector']);
@@ -112,4 +119,9 @@ test('쿠디 8.0 배송비와 자동 조합명을 적용한다',()=>{
   assert.equal(result.lines.find(line=>line.category==='배송비').amount,20000);
   assert.equal(result.total,1209000);
   assert.equal(scenarioDisplayName({packages:['hubBase','coody10Base']},catalog),'쿠디 허브쉘터 PRO + 쿠디 10.0 PRO');
+});
+test('05 비교표 머리글은 데이터 셀 안에 중첩되지 않는다',()=>{
+  const source=readFileSync(new URL('../src/main.js',import.meta.url),'utf8');
+  assert.ok(source.includes('const headings=columns.map'));
+  assert.ok(!source.includes('cell(x=>`<th>'));
 });
