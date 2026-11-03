@@ -12,11 +12,11 @@ test('공개 스냅샷에는 채택 가격만 있고 원본 경로가 없다',()
   assert.ok(catalog.claims.every(x=>catalog.adoptions.some(a=>a.claimId===x.id)));
   assert.ok(!/(?:\.sqlite|\.pdf|\.xlsx|data\/|legacy\/|C:\\)/i.test(JSON.stringify(catalog)));
 });
-test('정적 JSON에서도 기존 소계·미확인 총액 규칙을 유지한다',()=>{
+test('정적 JSON에서 신규 배송비와 도킹 치수를 적용한다',()=>{
   const camp=evaluate({packages:['campBase'],options:{campFront:1,campSide:2,campFrontCarpet:1}});
-  assert.equal(camp.knownSubtotal,2860000);assert.equal(camp.total,null);
+  assert.equal(camp.knownSubtotal,2890000);assert.equal(camp.total,2890000);
   const coody=evaluate({packages:['hubBase','coody10Base'],options:{proConnector:1}});
-  assert.equal(coody.knownSubtotal,3320000);assert.equal(coody.docking.status,'확정');assert.equal(coody.layout.footprint,null);
+  assert.equal(coody.knownSubtotal,3370000);assert.equal(coody.docking.status,'확정');assert.equal(coody.layout.footprint.length,6.7);
   assert.equal(evaluate({packages:['happyBase'],options:{skySwap:1}}).lines.find(x=>x.subject==='skySwap').amount,280000);
 });
 test('조합 파일은 공유되고 미등록 제품·옵션은 거부한다',()=>{

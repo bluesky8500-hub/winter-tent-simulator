@@ -19,7 +19,7 @@ export function decodeScenarioFile(text,catalog){
       if(!option||!Number.isInteger(qty)||qty<0||qty>option.max)throw new Error(`옵션 값이 올바르지 않습니다: ${id}`);
       if(qty)selected[id]=qty;
     }
-    return {name:String(item.name??'이름 없는 조합').slice(0,60),packages:[...new Set(item.packages)],options:selected};
+    return {name:String(item.name??'이름 없는 조합').slice(0,60),packages:[...new Set(item.packages)],options:selected,...(item.color?{color:['베이지','그레이카키'].includes(item.color)?item.color:undefined}:{}),...(item.frontTpuTarget==='st'?{frontTpuTarget:'st'}:{})};
   };
   return {current:data.current?clean(data.current):null,saved:data.saved.map(clean)};
 }

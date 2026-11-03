@@ -29,25 +29,31 @@ export function evaluate(scenario,data=activeCatalog){
     errors.push('파밀리아 카펫 세트와 포함 단품은 중복 선택할 수 없습니다.');
   if(count('familiaCarpetBagSet') && count('coodyCarpetBag'))
     errors.push('파밀리아 카펫+가방 세트에는 가방 2개가 포함되어 공용 카펫 가방과 중복 선택할 수 없습니다.');
+  if(count('coody8CarpetBagSet')&&(count('coody8Carpet')||count('coody8CarpetBag'))) errors.push('8.0 PRO 카펫+가방 세트와 단품은 중복 선택할 수 없습니다.');
+  if(count('airnok8SideTpu')&&scenario.color==='베이지') errors.push('베이지 기본 증정 사이드 TPU와 유료 세트는 중복 선택할 수 없습니다.');
+  if(count('happyFront')&&packageIds.includes('happyBase')&&scenario.frontTpuTarget!=='st') errors.push('타프쉘터 정면 TPU는 기본 포함입니다. 추가 옵션은 10.0ST 적용 시에만 선택하세요.');
+  if(count('skySwap')&&count('happyFront')) errors.push('SKY 변경 구성에서 정면 TPU 적용 범위는 미확인입니다.');
   if(count('skySwap')){
     if(!packageIds.includes('happyBase')) errors.push('SKY 교체는 해피패밀리 세트에서만 가능합니다.');
     moduleIds=moduleIds.map(id=>id==='tarp'?'sky':id);
     warnings.push('SKY 교체 시 포함품·도킹 외곽은 미확인입니다.');
   }
   moduleIds=unique(moduleIds);
-  if(packageIds.length>1 && !(packageIds.length===2&&packageIds.includes('hubBase')&&packageIds.includes('coody10Base')))
-    errors.push('이 패키지 조합의 도킹 호환성은 확인되지 않았습니다.');
+  if(packageIds.length>1&&!data.dockingRules.some(r=>r.status==='확정'&&r.modules.every(id=>moduleIds.includes(id)))) errors.push('이 패키지 조합의 도킹 호환성은 확인되지 않았습니다.');
   const packageProducts=unique(chosenPackages.filter(Boolean).flatMap(p=>p.modules.map(id=>byId(data.modules,id)?.product).filter(Boolean)));
   for(const [id,qty] of selectedEntries){
     const option=byId(data.options,id); if(!option)continue;
     const target=option.target;
     const valid= target==='coodyDock' ? packageIds.includes('hubBase')&&packageIds.includes('coody10Base') :
+      target==='coody8Dock' ? packageIds.includes('coody8Base')&&packageIds.length>1 :
+      target==='coodyProStandard' ? packageProducts.some(p=>['hub','coody10','familia'].includes(p)) :
+      target==='airnokShared' ? packageProducts.some(p=>['happy','airnok6','airnok8'].includes(p)) :
       target==='coodyPro'||target==='coodyAccessory' ? packageProducts.some(p=>['hub','coody10','familia','coody8'].includes(p)) :
       target==='happy' ? packageIds.includes('happyBase') :
       target==='happyBase' ? packageIds.includes('happyBase') :
       moduleIds.includes(target);
     if(!valid) errors.push(`${option.name}: 적용 대상 모듈이 선택되지 않았습니다.`);
-    if(id==='proClearDoor'||id==='happyFront'||id==='happyDockTarp'||id==='happyExtendTarp') warnings.push(`${option.name}: ${option.condition}`);
+    if(id==='proClearDoor'||id==='happyDockTarp'||id==='happyExtendTarp') warnings.push(`${option.name}: ${option.condition}`);
   }
   const base=chosenPackages.filter(Boolean).map(p=>line(p.id,p.name,'기본가',1,data));
   lines.push(...base);
@@ -59,17 +65,21 @@ export function evaluate(scenario,data=activeCatalog){
   const shipping=scenario.shipping;
   let shippingAmount=null;
   if(shipping?.status==='확정'&&Number.isInteger(shipping.amount)&&shipping.amount>=0) shippingAmount=shipping.amount;
+  else if(packageIds.length&&chosenPackages.every(Boolean)){
+    const fees=packageIds.map(id=>adoptedClaim(id,'shipping',data)?.value);
+    if(fees.every(x=>Number.isInteger(x)&&x>=0)) shippingAmount=fees.reduce((a,b)=>a+b,0);
+  }
   if(shippingAmount==null) warnings.push('배송비 적용 금액·조건 미확인');
   const discount=scenario.discount;
   let discountAmount=0;
   if(discount?.status==='확정'&&Number.isInteger(discount.amount)&&discount.amount>=0) discountAmount=discount.amount;
   else if(discount?.status==='미확인') warnings.push('세트 할인 금액 미확인');
   lines.push({subject:'discount',name:discount?'세트 할인':'별도 할인 기록 없음',category:'세트 할인',quantity:1,unitPrice:discount?.status==='확정'?-discountAmount:null,amount:discount?.status==='확정'?-discountAmount:null,status:discount?.status||'정보 없음',source:discount?.source||null});
-  lines.push({subject:'shipping',name:'배송비',category:'배송비',quantity:1,unitPrice:shippingAmount,amount:shippingAmount,status:shippingAmount==null?'미확인':'확정',source:shipping?.source||null});
+  lines.push({subject:'shipping',name:'배송비',category:'배송비',quantity:1,unitPrice:shippingAmount,amount:shippingAmount,status:shippingAmount==null?'미확인':'확정',source:shipping?.source||'사용자 확인 · 텐트별 합산, 동시 구매 옵션 합배송'});
   const knownSubtotal=subtotal-discountAmount+(shippingAmount??0);
   const total=(errors.length||missingPrices.length||shippingAmount==null||discount?.status==='미확인')?null:knownSubtotal;
   const docking=assessDocking(moduleIds,data,selected);
-  const layout=assessLayout(packageIds,moduleIds,data);
+  const layout=docking.status==='커넥터 미선택'&&packageIds.length>1?{status:'미확인',bodyFit:null,footprint:null,individual:[],unknown:['필수 커넥터 미선택','가이라인','차량','출입 동선']}:assessLayout(packageIds,moduleIds,data,{length:10,width:7},scenario);
   return {lines,knownSubtotal,total,missingPrices:missingPrices.map(x=>x.name),errors,warnings:unique(warnings),modules:moduleIds,docking,layout};
 }
 
@@ -82,18 +92,20 @@ function line(subject,name,category,quantity,data){
 export function assessDocking(moduleIds,data=activeCatalog,selected={}){
   const rules=data.dockingRules.filter(r=>r.modules.every(id=>moduleIds.includes(id)));
   if(!rules.length) return {status:'해당 없음',rules:[]};
-  const rule=rules[0];
-  if(rule.id==='coodyDock'&&!selected.proConnector) return {status:'커넥터 미선택',ruleId:rule.id,connector:rule.connector,note:'PRO 커넥터가 있어야 확인된 도킹 구성입니다.'};
+  const rule=rules.find(r=>r.id==='airnok6Tarp'&&moduleIds.includes('airnok6Body'))||rules.find(r=>r.id.startsWith('airnok8')&&moduleIds.includes('airnok8Body'))||rules.find(r=>r.id.startsWith('coody8')&&moduleIds.includes('coody8Body'))||rules[0];
+  const required={coodyDock:'proConnector',coody8Hub:'coody8Connector',coody8Ten:'coody8Connector',coody8Familia:'coody8Connector',airnok6Tarp:'airnok6Connector',airnok8St:'airnok8Connector',airnok8Tarp:'airnok8Connector'}[rule.id];
+  if(required&&!selected[required]) return {status:'커넥터 미선택',ruleId:rule.id,connector:rule.connector,note:`${required} 선택이 필요합니다.`};
   return {status:rule.status,ruleId:rule.id,connector:rule.connector,note:rule.note};
 }
 
-export function assessLayout(packageIds,moduleIds,data=activeCatalog,site={length:10,width:7}){
+export function assessLayout(packageIds,moduleIds,data=activeCatalog,site={length:10,width:7},scenario={}){
   const key=packageIds.length===1?packageIds[0]:packageIds.includes('hubBase')&&packageIds.includes('coody10Base')?'coodyDock':null;
   const f=data.footprints.find(x=>x.key===key);
   const individual=moduleIds.map(id=>byId(data.modules,id)).filter(x=>x&&x.width&&x.length).map(m=>({id:m.id,name:m.name,width:m.width,length:m.length}));
   if(!f||f.width==null||f.length==null||moduleIds.includes('sky')) return {status:'미확인',bodyFit:null,footprint:null,individual,unknown:['도킹 완성 외곽','가이라인','차량','출입 동선','팩다운 여유']};
   const fits=f.length<=site.length&&f.width<=site.width;
-  return {status:'본체 치수만 확인',bodyFit:fits,footprint:{width:f.width,length:f.length,source:f.source},individual,remaining:{length:site.length-f.length,width:site.width-f.width},unknown:['가이라인','차량','출입 동선','팩다운 여유']};
+  const rearClearance=packageIds.includes('airnok8Base')&&scenario.color==='그레이카키'?1:0;
+  return {status:'본체 치수만 확인',bodyFit:fits,footprint:{width:f.width,length:f.length,source:f.source,status:f.status},individual,remaining:{length:site.length-f.length,width:site.width-f.width},rearClearance,unknown:['가이라인','차량','출입 동선','팩다운 여유']};
 }
 
 export function compareQuote(result,quote){return {quote,knownSubtotal:result.knownSubtotal,difference:quote-result.knownSubtotal,matching:quote===result.knownSubtotal,finalTotalKnown:result.total!=null};}
