@@ -1,5 +1,6 @@
 import {evaluate,won,compareQuote,configureCatalog} from './engine.js';
 import {encodeScenarioFile,decodeScenarioFile} from './scenario-file.js';
+import {renderFitBoard} from './fit-board.js';
 
 const response=await fetch(new URL('../catalog.json',import.meta.url));
 if(!response.ok)throw new Error(`공개 카탈로그를 불러오지 못했습니다: ${response.status}`);
@@ -33,14 +34,13 @@ function renderControls(){
 }
 function renderResult(){
   const r=evaluate(scenario);
-  const rows=r.lines.map(x=>`<div class="row"><span>${esc(x.category)} · ${esc(x.name)}${x.quantity>1?' × '+x.quantity:''}<br><small class="muted">${esc(x.source||'확인 필요')}</small></span><strong>${x.status==='정보 없음'?'별도 기록 없음':won(x.amount)}</strong></div>`).join('');
+  const rows=r.lines.map(x=>`<div class="row"><span>${esc(x.category)} · ${esc(x.name)}${x.quantity>1?' × '+x.quantity:''}</span><strong>${x.status==='정보 없음'?'별도 기록 없음':won(x.amount)}</strong></div>`).join('');
   const included=scenario.packages.flatMap(id=>catalog.packages.find(x=>x.id===id)?.included||[]).filter(id=>!(id==='tarpFrontTpuIncluded'&&scenario.options.skySwap)).map(id=>catalog.options.find(x=>x.id===id)).filter(Boolean);
   const gifts=[...scenario.packages.flatMap(id=>catalog.packages.find(x=>x.id===id)?.gifts||[]),...(scenario.packages.includes('airnok8Base')&&scenario.color==='베이지'?['airnok8BeigeFly','airnok8BeigeSideTpu']:[])].map(id=>catalog.options.find(x=>x.id===id)).filter(Boolean);
   if(scenario.packages.includes('airnok8Base')&&scenario.color==='그레이카키') included.push(catalog.options.find(x=>x.id==='airnok8GrayFly'));
   $('result').innerHTML=`<span class="badge ${r.total==null?'uncertain':''}">${r.total==null?'최종 총액 미확인':'최종 총액 확인'}</span><div class="money ${r.total==null?'unknown':''}">${won(r.total)}</div><div class="row subtotal"><span>확인된 항목 소계</span><strong>${won(r.knownSubtotal)}</strong></div>${rows}<div class="label">기본 포함품</div><p class="small">${included.length?included.map(x=>`${esc(x.name)}${x.quantity?' '+x.quantity+'개':''}`).join(' · '):'기록된 항목 없음'}</p><div class="label">판매 당시 사은품</div><p class="small">${gifts.length?gifts.map(x=>`${esc(x.name)}${x.quantity?' '+x.quantity+'개':''} (행사 적용 확인 필요)`).join(' · '):'기록된 항목 없음'}</p><div class="warning-list">${[...r.errors.map(x=>'오류: '+x),...r.warnings].map(x=>`<div>• ${esc(x)}</div>`).join('')||'확인할 경고 없음'}</div>`;
   $('docking').innerHTML=`<span class="badge ${r.docking.status==='확정'?'':'uncertain'}">${esc(r.docking.status)}</span><p class="small">${esc(r.docking.note||'선택된 모듈에 대한 도킹 규칙 없음')}<br>도킹 호환성과 사이트 설치 적합성은 별도로 판단합니다.</p>`;
-  if(r.layout.footprint){const f=r.layout.footprint;$('layout').innerHTML=`<span class="badge">본체 외곽 기준 ${r.layout.bodyFit?'치수상 들어감':'치수상 초과'}</span><div class="site"><div class="tent" style="width:${f.length/10*100}%;height:${f.width/7*100}%">${esc(f.length)} × ${esc(f.width)}m</div></div><p class="small">${esc(f.status||'본체 치수')} · 남는 길이 합계 ${r.layout.remaining.length.toFixed(2)}m · 폭 합계 ${r.layout.remaining.width.toFixed(2)}m. 한쪽 여유가 아닙니다.</p>${r.layout.rearClearance?'<p class="small">그레이카키 풀플라이 후면 설치 추가공간 1.0m가 필요합니다.</p>':''}<p class="small">미확인: ${esc(r.layout.unknown.join(' · '))}. 설치 가능 판정은 보류합니다.</p>`}
-  else $('layout').innerHTML=`<span class="badge uncertain">조합 외곽 미확인</span><p class="small">확인된 개별 본체: ${r.layout.individual.map(x=>`${esc(x.name)} ${x.length} × ${x.width}m`).join(' / ')||'없음'}</p><p class="small">도킹 전체 외곽과 가이라인·차량·동선이 확인되지 않아 합성 배치도를 만들지 않습니다.</p>`;
+  renderFitBoard($('layout'),r.modules,catalog,scenario);
 }
 function renderSaved(){
   $('saved').innerHTML=saved.length?`<div class="saved-grid">${saved.map((s,i)=>{const r=evaluate(s);return `<div class="saved-card"><h3>${esc(s.name)}</h3><div class="small">${esc(s.packages.map(id=>catalog.packages.find(x=>x.id===id)?.name||id).join(' + '))}</div><div class="money" style="font-size:21px">${won(r.total)}</div><div class="small">확인 소계 ${won(r.knownSubtotal)} · 도킹 ${esc(r.docking.status)} · 배치 ${esc(r.layout.status)}</div><button data-load="${i}">불러오기</button><button data-delete="${i}">삭제</button></div>`}).join('')}</div>`:'<p class="small">저장한 조합이 없습니다. 현재 조합을 저장하면 나란히 비교할 수 있습니다.</p>';
