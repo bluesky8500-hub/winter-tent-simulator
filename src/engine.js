@@ -31,7 +31,7 @@ export function evaluate(scenario,data=activeCatalog){
     errors.push('파밀리아 카펫+가방 세트에는 가방 2개가 포함되어 공용 카펫 가방과 중복 선택할 수 없습니다.');
   if(count('coody8CarpetBagSet')&&(count('coody8Carpet')||count('coody8CarpetBag'))) errors.push('8.0 PRO 카펫+가방 세트와 단품은 중복 선택할 수 없습니다.');
   if(count('airnok8SideTpu')&&scenario.color==='베이지') errors.push('베이지 기본 증정 사이드 TPU와 유료 세트는 중복 선택할 수 없습니다.');
-  if(count('happyFront')&&packageIds.includes('happyBase')&&scenario.frontTpuTarget!=='st') errors.push('타프쉘터 정면 TPU는 기본 포함입니다. 추가 옵션은 10.0ST 적용 시에만 선택하세요.');
+  if(count('happyFront')) errors.push('타프쉘터 정면 TPU는 기본 포함입니다. 129,000원 별도 판매 옵션의 적용 대상은 미확인입니다.');
   if(count('skySwap')&&count('happyFront')) errors.push('SKY 변경 구성에서 정면 TPU 적용 범위는 미확인입니다.');
   if(count('skySwap')){
     if(!packageIds.includes('happyBase')) errors.push('SKY 교체는 해피패밀리 세트에서만 가능합니다.');

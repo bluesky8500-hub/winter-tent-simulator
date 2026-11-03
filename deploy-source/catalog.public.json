@@ -114,11 +114,11 @@
       "dimensions": "4.2 × 6.5 × 2.35m",
       "area": "27.30㎡ 본체 외곽",
       "weight": "본체 54kg",
-      "fabric": "TC 혼용률 충돌",
+      "fabric": "면 35% / 폴리에스터 65%",
       "fly": "전체 풀플라이 기본 포함",
-      "status": "충돌",
-      "source": "master",
-      "locator": "§2·§4·§8"
+      "status": "사용자 확인",
+      "source": "user20261103",
+      "locator": "첨부 지시문 §6-1"
     },
     {
       "product": "familia",
@@ -623,9 +623,9 @@
       "id": "happyFront",
       "name": "정면 TPU 도어",
       "kind": "paid",
-      "target": "st",
+      "target": "unverified",
       "max": 1,
-      "condition": "10.0ST 전면 추가 구매 옵션; SKY 적용 범위 미확인"
+      "condition": "별도 판매 129000원 기록 보존; 적용 대상·추가 구매 의미·SKY 포함 관계 미확인"
     },
     {
       "id": "happyDockTarp",
@@ -2117,10 +2117,10 @@
     },
     {
       "id": "C4",
-      "status": "해결",
+      "status": "부분 해결",
       "subject": "happyFront",
       "issue": "타프쉘터 정면 TPU 도어 기본 포함 확인",
-      "needed": "10.0ST 별도 구매 옵션과 구분"
+      "needed": "129000원 별도 판매 옵션의 적용 대상·추가 구매 의미 미확인"
     },
     {
       "id": "U1",
@@ -2159,10 +2159,10 @@
     },
     {
       "id": "PDF-HAPPY-TPU",
-      "status": "해결",
+      "status": "부분 해결",
       "subject": "happy",
-      "issue": "타프쉘터 정면 TPU 기본 포함; 129000원 별도 옵션은 10.0ST 대상",
-      "needed": "SKY 교체 구성의 포함 관계는 미확인"
+      "issue": "타프쉘터 정면 TPU 기본 포함; 별도 판매 옵션의 대상은 미확인",
+      "needed": "10.0ST 적용 여부와 SKY 교체 구성 포함 관계 확인"
     },
     {
       "id": "PDF-HAPPY-WEIGHT",
