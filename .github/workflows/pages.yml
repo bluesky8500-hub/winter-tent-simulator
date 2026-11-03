@@ -1,0 +1,46 @@
+name: Build and deploy tent simulator
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test public catalog and calculation rules
+        run: node --test tests/public.test.js
+      - name: Build frontend for repository path
+        run: node scripts/build-frontend.mjs
+      - name: Generate browser JSON from approved public snapshot
+        run: node scripts/generate-browser-data.mjs
+      - name: Check published file allowlist
+        run: node scripts/check-dist.mjs
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

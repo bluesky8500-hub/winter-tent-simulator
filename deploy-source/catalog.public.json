@@ -1,0 +1,1557 @@
+{
+  "schemaVersion": 1,
+  "sources": {
+    "master": {
+      "label": "사용자 제공 마스터 (원본 비공개)",
+      "kind": "사용자 제공 정리"
+    },
+    "xlsx": {
+      "label": "사용자 제공 표 (원본 비공개)",
+      "kind": "사용자 제공 정리"
+    },
+    "legacy": {
+      "label": "기존 대시보드 (원본 비공개)",
+      "kind": "기존 대시보드"
+    },
+    "campPdf": {
+      "label": "판매페이지 PDF (원본 비공개)",
+      "kind": "판매페이지 저장본"
+    },
+    "hubPdf": {
+      "label": "판매페이지 PDF (원본 비공개)",
+      "kind": "판매페이지 저장본"
+    },
+    "coody10Pdf": {
+      "label": "판매페이지 PDF (원본 비공개)",
+      "kind": "판매페이지 저장본"
+    },
+    "familiaPdf": {
+      "label": "판매페이지 PDF (원본 비공개)",
+      "kind": "판매페이지 저장본"
+    },
+    "happyPdf": {
+      "label": "판매페이지 PDF (원본 비공개)",
+      "kind": "판매페이지 저장본"
+    },
+    "coody8Pdf": {
+      "label": "판매페이지 PDF (원본 비공개)",
+      "kind": "판매페이지 저장본"
+    },
+    "airnok6Pdf": {
+      "label": "판매페이지 PDF (원본 비공개)",
+      "kind": "판매페이지 저장본"
+    },
+    "airnok8Pdf": {
+      "label": "판매페이지 PDF (원본 비공개)",
+      "kind": "판매페이지 저장본"
+    }
+  },
+  "products": [
+    {
+      "id": "camp",
+      "brand": "캠빌",
+      "name": "케빈 3-Bay 27.3",
+      "primary": true,
+      "type": "일체형"
+    },
+    {
+      "id": "familia",
+      "brand": "쿠디",
+      "name": "파밀리아 PRO",
+      "primary": true,
+      "type": "일체형"
+    },
+    {
+      "id": "hub",
+      "brand": "쿠디",
+      "name": "허브쉘터 PRO",
+      "primary": true,
+      "type": "모듈"
+    },
+    {
+      "id": "coody10",
+      "brand": "쿠디",
+      "name": "10.0 PRO",
+      "primary": true,
+      "type": "모듈"
+    },
+    {
+      "id": "happy",
+      "brand": "에어노크",
+      "name": "22 해피패밀리",
+      "primary": true,
+      "type": "세트"
+    },
+    {
+      "id": "coody8",
+      "brand": "쿠디",
+      "name": "8.0 PRO",
+      "primary": false,
+      "type": "모듈"
+    },
+    {
+      "id": "airnok6",
+      "brand": "에어노크",
+      "name": "6.4 큐브플러스",
+      "primary": false,
+      "type": "모듈"
+    },
+    {
+      "id": "airnok8",
+      "brand": "에어노크",
+      "name": "8.0T 알파큐브",
+      "primary": false,
+      "type": "모듈"
+    }
+  ],
+  "specs": [
+    {
+      "product": "camp",
+      "dimensions": "4.2 × 6.5 × 2.35m",
+      "area": "27.30㎡ 본체 외곽",
+      "weight": "본체 54kg",
+      "fabric": "TC 혼용률 충돌",
+      "fly": "전체 풀플라이 기본 포함",
+      "status": "충돌",
+      "source": "master",
+      "locator": "§2·§4·§8"
+    },
+    {
+      "product": "familia",
+      "dimensions": "3.6 × 4.8 × 2.3m",
+      "area": "17.28㎡ 본체 외곽",
+      "weight": "본체 55kg + 부속 17kg",
+      "fabric": "면 35% / 폴리에스터 65% (마스터 기록)",
+      "fly": "루프플라이 기본 포함",
+      "status": "마스터 기록",
+      "source": "master",
+      "locator": "§2·§4"
+    },
+    {
+      "product": "hub",
+      "dimensions": "3.8 × 3.6 × 2.7m",
+      "area": "13.68㎡ 본체 외곽",
+      "weight": "본체 47kg + 부속 12kg",
+      "fabric": "면 35% / 폴리에스터 65% (마스터 기록)",
+      "fly": "루프플라이 기본 포함",
+      "status": "마스터 기록",
+      "source": "master",
+      "locator": "§2·§4"
+    },
+    {
+      "product": "coody10",
+      "dimensions": "3.6 × 2.8 × 2.3m",
+      "area": "10.08㎡ 본체 외곽",
+      "weight": "본체 32kg + 부속 10.6kg",
+      "fabric": "면 35% / 폴리에스터 65% (마스터 기록)",
+      "fly": "루프플라이 기본 포함",
+      "status": "마스터 기록",
+      "source": "master",
+      "locator": "§2·§4·§8"
+    },
+    {
+      "product": "happy",
+      "dimensions": "3.6 × 6.2 × 2.3m",
+      "area": "22.32㎡ 연결부 포함 외곽 / 20.16㎡ 두 동 합",
+      "weight": "상품정보 표기 49kg (구성 범위 미확인)",
+      "fabric": "폴리에스터·면, 혼용률 미확인",
+      "fly": "10.0ST 플라이 사은품 조건 확인 / 쉘터 플라이 미포함",
+      "status": "충돌",
+      "source": "master",
+      "locator": "2·31·33쪽"
+    },
+    {
+      "product": "coody8",
+      "dimensions": "3.2 × 2.5 × 2.3m",
+      "area": "본체 외곽 8.00㎡ (치수 계산)",
+      "weight": "본체 약 31kg + 구성품 약 11.42kg",
+      "fabric": "면 35% / 폴리에스터 65%",
+      "fly": "타프 기본 구성",
+      "status": "PDF 확인",
+      "source": "coody8Pdf",
+      "locator": "61–63쪽"
+    },
+    {
+      "product": "airnok6",
+      "dimensions": "2.8 × 2.3 × 1.7m (PDF 설명)",
+      "area": "미정규화",
+      "weight": "판매 설명 18kg / 상세 사양 18.5kg",
+      "fabric": "미정규화",
+      "fly": "미정규화",
+      "status": "충돌",
+      "source": "airnok6Pdf",
+      "locator": "2·33쪽"
+    },
+    {
+      "product": "airnok8",
+      "dimensions": "3.6 × 2.3 × 2.3m",
+      "area": "본체 외곽 8.28㎡ (치수 계산)",
+      "weight": "본체 28kg",
+      "fabric": "면/폴리에스터 혼방, 혼용률 미확인",
+      "fly": "전용 플라이 기본 구성",
+      "status": "일부 확인",
+      "source": "airnok8Pdf",
+      "locator": "22–23쪽"
+    }
+  ],
+  "modules": [
+    {
+      "id": "campBody",
+      "product": "camp",
+      "name": "케빈 3-Bay 본체",
+      "width": 4.2,
+      "length": 6.5,
+      "height": 2.35,
+      "footprintStatus": "확정"
+    },
+    {
+      "id": "familiaBody",
+      "product": "familia",
+      "name": "파밀리아 본체",
+      "width": 3.6,
+      "length": 4.8,
+      "height": 2.3,
+      "footprintStatus": "확정"
+    },
+    {
+      "id": "hubBody",
+      "product": "hub",
+      "name": "허브쉘터 본체",
+      "width": 3.8,
+      "length": 3.6,
+      "height": 2.7,
+      "footprintStatus": "확정"
+    },
+    {
+      "id": "coody10Body",
+      "product": "coody10",
+      "name": "10.0 PRO 본체",
+      "width": 3.6,
+      "length": 2.8,
+      "height": 2.3,
+      "footprintStatus": "확정"
+    },
+    {
+      "id": "st",
+      "product": "happy",
+      "name": "10.0ST 침실",
+      "width": 3.6,
+      "length": 2.8,
+      "height": 2.3,
+      "footprintStatus": "확정"
+    },
+    {
+      "id": "tarp",
+      "product": "happy",
+      "name": "10.0 타프쉘터",
+      "width": 3.6,
+      "length": 2.8,
+      "height": 2.3,
+      "footprintStatus": "확정"
+    },
+    {
+      "id": "sky",
+      "product": "happy",
+      "name": "10.0 SKY 교체 쉘터",
+      "width": null,
+      "length": null,
+      "height": null,
+      "footprintStatus": "미확인"
+    },
+    {
+      "id": "happyConnector",
+      "product": "happy",
+      "name": "해피패밀리 연결부",
+      "width": 3.6,
+      "length": 0.6,
+      "height": null,
+      "footprintStatus": "마스터 기록"
+    },
+    {
+      "id": "coodyConnector",
+      "product": "hub",
+      "name": "PRO 커넥터",
+      "width": null,
+      "length": null,
+      "height": null,
+      "footprintStatus": "미확인"
+    },
+    {
+      "id": "coody8Body",
+      "product": "coody8",
+      "name": "8.0 PRO 본체",
+      "width": 3.2,
+      "length": 2.5,
+      "height": 2.3,
+      "footprintStatus": "coody8Pdf 61쪽"
+    },
+    {
+      "id": "airnok6Body",
+      "product": "airnok6",
+      "name": "6.4 큐브플러스 본체",
+      "width": 2.3,
+      "length": 2.8,
+      "height": 1.7,
+      "footprintStatus": "PDF 2쪽"
+    },
+    {
+      "id": "airnok8Body",
+      "product": "airnok8",
+      "name": "8.0T 알파큐브 본체",
+      "width": 3.6,
+      "length": 2.3,
+      "height": 2.3,
+      "footprintStatus": "airnok8Pdf 23쪽"
+    }
+  ],
+  "packages": [
+    {
+      "id": "campBase",
+      "name": "케빈 본체",
+      "modules": [
+        "campBody"
+      ],
+      "included": [
+        "campFly"
+      ],
+      "gifts": []
+    },
+    {
+      "id": "familiaBase",
+      "name": "파밀리아 본체",
+      "modules": [
+        "familiaBody"
+      ],
+      "included": [
+        "familiaFloor",
+        "familiaFly"
+      ],
+      "gifts": []
+    },
+    {
+      "id": "hubBase",
+      "name": "허브쉘터 본체",
+      "modules": [
+        "hubBody"
+      ],
+      "included": [
+        "hubFloor",
+        "hubFly",
+        "hubSideWindow"
+      ],
+      "gifts": []
+    },
+    {
+      "id": "coody10Base",
+      "name": "10.0 PRO 본체",
+      "modules": [
+        "coody10Body"
+      ],
+      "included": [
+        "coody10Floor",
+        "coody10Fly",
+        "coody10SideWindow"
+      ],
+      "gifts": []
+    },
+    {
+      "id": "happyBase",
+      "name": "해피패밀리 세트",
+      "modules": [
+        "st",
+        "tarp",
+        "happyConnector"
+      ],
+      "included": [],
+      "gifts": [
+        "stFlyGift",
+        "stSideGift"
+      ]
+    },
+    {
+      "id": "coody8Base",
+      "name": "8.0 PRO 본체",
+      "modules": [
+        "coody8Body"
+      ],
+      "included": [],
+      "gifts": []
+    },
+    {
+      "id": "airnok6Base",
+      "name": "6.4 큐브플러스 본체",
+      "modules": [
+        "airnok6Body"
+      ],
+      "included": [],
+      "gifts": []
+    },
+    {
+      "id": "airnok8Base",
+      "name": "8.0T 알파큐브 본체",
+      "modules": [
+        "airnok8Body"
+      ],
+      "included": [],
+      "gifts": []
+    }
+  ],
+  "options": [
+    {
+      "id": "campFly",
+      "name": "전체 풀플라이",
+      "kind": "included",
+      "target": "campBody",
+      "max": 1
+    },
+    {
+      "id": "familiaFloor",
+      "name": "거실 탈착식 바닥·침실 일체형 바닥",
+      "kind": "included",
+      "target": "familiaBody",
+      "max": 1
+    },
+    {
+      "id": "familiaFly",
+      "name": "루프플라이",
+      "kind": "included",
+      "target": "familiaBody",
+      "max": 1
+    },
+    {
+      "id": "hubFloor",
+      "name": "탈착식 바닥",
+      "kind": "included",
+      "target": "hubBody",
+      "max": 1
+    },
+    {
+      "id": "hubFly",
+      "name": "루프플라이",
+      "kind": "included",
+      "target": "hubBody",
+      "max": 1
+    },
+    {
+      "id": "hubSideWindow",
+      "name": "측면 투명창",
+      "kind": "included",
+      "target": "hubBody",
+      "max": 2,
+      "quantity": 2
+    },
+    {
+      "id": "coody10Floor",
+      "name": "탈착식 바닥",
+      "kind": "included",
+      "target": "coody10Body",
+      "max": 1
+    },
+    {
+      "id": "coody10Fly",
+      "name": "루프플라이",
+      "kind": "included",
+      "target": "coody10Body",
+      "max": 1
+    },
+    {
+      "id": "coody10SideWindow",
+      "name": "측면 투명창",
+      "kind": "included",
+      "target": "coody10Body",
+      "max": 2,
+      "quantity": 2
+    },
+    {
+      "id": "stFlyGift",
+      "name": "10.0ST 블랙코팅 플라이",
+      "kind": "gift",
+      "target": "st",
+      "max": 1,
+      "condition": "판매 당시 사은품; 실제 적용 확인 필요"
+    },
+    {
+      "id": "stSideGift",
+      "name": "10.0ST 사이드 TPU창",
+      "kind": "gift",
+      "target": "st",
+      "max": 2,
+      "quantity": 2,
+      "condition": "판매 당시 사은품; 실제 적용 확인 필요"
+    },
+    {
+      "id": "campFront",
+      "name": "정면 우레탄창",
+      "kind": "paid",
+      "target": "campBody",
+      "max": 1
+    },
+    {
+      "id": "campSide",
+      "name": "측면 우레탄창",
+      "kind": "paid",
+      "target": "campBody",
+      "max": 2
+    },
+    {
+      "id": "campFrontCarpet",
+      "name": "전실 카펫",
+      "kind": "paid",
+      "target": "campBody",
+      "max": 1
+    },
+    {
+      "id": "campRearCarpet",
+      "name": "후실 카펫",
+      "kind": "paid",
+      "target": "campBody",
+      "max": 1
+    },
+    {
+      "id": "proClearDoor",
+      "name": "PRO 라인 투명문",
+      "kind": "paid",
+      "target": "coodyPro",
+      "max": 2,
+      "condition": "정확한 호환 모델·필요 수량 미확인"
+    },
+    {
+      "id": "proConnector",
+      "name": "PRO 커넥터",
+      "kind": "paid",
+      "target": "coodyDock",
+      "max": 1
+    },
+    {
+      "id": "coody10Ground",
+      "name": "10.0 PRO PVC 그라운드시트",
+      "kind": "paid",
+      "target": "coody10Body",
+      "max": 1
+    },
+    {
+      "id": "coody10Carpet",
+      "name": "10.0 PRO 카펫",
+      "kind": "paid",
+      "target": "coody10Body",
+      "max": 1
+    },
+    {
+      "id": "hubGround",
+      "name": "허브쉘터 PVC 그라운드시트",
+      "kind": "paid",
+      "target": "hubBody",
+      "max": 1
+    },
+    {
+      "id": "hubCarpet",
+      "name": "허브쉘터 카펫",
+      "kind": "paid",
+      "target": "hubBody",
+      "max": 1
+    },
+    {
+      "id": "coodyCarpetBag",
+      "name": "쿠디 카펫 가방",
+      "kind": "paid",
+      "target": "coodyAccessory",
+      "max": 2
+    },
+    {
+      "id": "coodyPump",
+      "name": "쿠디 스마트 전동펌프",
+      "kind": "paid",
+      "target": "coodyAccessory",
+      "max": 1
+    },
+    {
+      "id": "familiaPVC",
+      "name": "파밀리아 PVC 그라운드시트",
+      "kind": "paid",
+      "target": "familiaBody",
+      "max": 1
+    },
+    {
+      "id": "familiaPE",
+      "name": "파밀리아 PE 그라운드시트",
+      "kind": "paid",
+      "target": "familiaBody",
+      "max": 1
+    },
+    {
+      "id": "familiaFrontCarpet",
+      "name": "파밀리아 전실 카펫",
+      "kind": "paid",
+      "target": "familiaBody",
+      "max": 1
+    },
+    {
+      "id": "familiaRearCarpet",
+      "name": "파밀리아 후실 카펫",
+      "kind": "paid",
+      "target": "familiaBody",
+      "max": 1
+    },
+    {
+      "id": "familiaCarpetSet",
+      "name": "파밀리아 전실+후실 카펫 세트",
+      "kind": "paid",
+      "target": "familiaBody",
+      "max": 1
+    },
+    {
+      "id": "familiaCarpetBagSet",
+      "name": "파밀리아 카펫+가방 2개 세트",
+      "kind": "paid",
+      "target": "familiaBody",
+      "max": 1
+    },
+    {
+      "id": "skySwap",
+      "name": "타프쉘터 → SKY 변경",
+      "kind": "replacement",
+      "target": "happyBase",
+      "max": 1
+    },
+    {
+      "id": "happyFront",
+      "name": "정면 TPU 도어",
+      "kind": "paid",
+      "target": "happy",
+      "max": 1,
+      "condition": "기본 포함 여부·적용 위치 미확인"
+    },
+    {
+      "id": "happyDockTarp",
+      "name": "도킹타프",
+      "kind": "paid",
+      "target": "happy",
+      "max": 1,
+      "condition": "조합 호환성 미확인"
+    },
+    {
+      "id": "happyExtendTarp",
+      "name": "확장타프 PRO",
+      "kind": "paid",
+      "target": "happy",
+      "max": 1,
+      "condition": "조합 호환성 미확인"
+    },
+    {
+      "id": "tarpSideSet",
+      "name": "타프쉘터 사이드 TPU 2개 세트",
+      "kind": "paid",
+      "target": "tarp",
+      "max": 1
+    },
+    {
+      "id": "tarpGround",
+      "name": "타프쉘터 좌식 그라운드시트",
+      "kind": "paid",
+      "target": "tarp",
+      "max": 1
+    },
+    {
+      "id": "happyCommonGround",
+      "name": "에어노크 공용 타포린 그라운드시트",
+      "kind": "paid",
+      "target": "happy",
+      "max": 1
+    },
+    {
+      "id": "airnokPump",
+      "name": "에어노크 자동 무선펌프",
+      "kind": "paid",
+      "target": "happy",
+      "max": 1
+    }
+  ],
+  "claims": [
+    {
+      "id": "pCamp",
+      "subject": "campBase",
+      "field": "price",
+      "value": 2390000,
+      "source": "campPdf",
+      "locator": "1쪽",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "pFamilia",
+      "subject": "familiaBase",
+      "field": "price",
+      "value": 2090000,
+      "source": "familiaPdf",
+      "locator": "1쪽",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "pHub",
+      "subject": "hubBase",
+      "field": "price",
+      "value": 1879000,
+      "source": "hubPdf",
+      "locator": "1쪽",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "pCoody10",
+      "subject": "coody10Base",
+      "field": "price",
+      "value": 1379000,
+      "source": "master",
+      "locator": "§8 PDF 대조: 쿠디 10.0 PRO",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "pHappy",
+      "subject": "happyBase",
+      "field": "price",
+      "value": 1750000,
+      "source": "happyPdf",
+      "locator": "1쪽",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "pCoody8",
+      "subject": "coody8Base",
+      "field": "price",
+      "value": 1189000,
+      "source": "coody8Pdf",
+      "locator": "1쪽",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "pAirnok6",
+      "subject": "airnok6Base",
+      "field": "price",
+      "value": 740000,
+      "source": "airnok6Pdf",
+      "locator": "1쪽",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "pAirnok8",
+      "subject": "airnok8Base",
+      "field": "price",
+      "value": 890000,
+      "source": "airnok8Pdf",
+      "locator": "1쪽",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_campFront",
+      "subject": "campFront",
+      "field": "price",
+      "value": 150000,
+      "source": "master",
+      "locator": "§캠빌 케빈 3-Bay 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_campSide",
+      "subject": "campSide",
+      "field": "price",
+      "value": 50000,
+      "source": "master",
+      "locator": "§캠빌 케빈 3-Bay 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_campFrontCarpet",
+      "subject": "campFrontCarpet",
+      "field": "price",
+      "value": 220000,
+      "source": "master",
+      "locator": "§캠빌 케빈 3-Bay 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_campRearCarpet",
+      "subject": "campRearCarpet",
+      "field": "price",
+      "value": 170000,
+      "source": "master",
+      "locator": "§캠빌 케빈 3-Bay 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_proClearDoor",
+      "subject": "proClearDoor",
+      "field": "price",
+      "value": 172000,
+      "source": "master",
+      "locator": "§쿠디 선택 옵션 가격",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_proConnector",
+      "subject": "proConnector",
+      "field": "price",
+      "value": 62000,
+      "source": "master",
+      "locator": "§쿠디 선택 옵션 가격",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_coody10Ground",
+      "subject": "coody10Ground",
+      "field": "price",
+      "value": 82000,
+      "source": "master",
+      "locator": "§쿠디 선택 옵션 가격",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_coody10Carpet",
+      "subject": "coody10Carpet",
+      "field": "price",
+      "value": 194900,
+      "source": "master",
+      "locator": "§쿠디 선택 옵션 가격",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_hubGround",
+      "subject": "hubGround",
+      "field": "price",
+      "value": 92000,
+      "source": "master",
+      "locator": "§쿠디 선택 옵션 가격",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_hubCarpet",
+      "subject": "hubCarpet",
+      "field": "price",
+      "value": 224000,
+      "source": "master",
+      "locator": "§쿠디 선택 옵션 가격",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_coodyCarpetBag",
+      "subject": "coodyCarpetBag",
+      "field": "price",
+      "value": 45000,
+      "source": "master",
+      "locator": "§쿠디 선택 옵션 가격",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_coodyPump",
+      "subject": "coodyPump",
+      "field": "price",
+      "value": 179000,
+      "source": "master",
+      "locator": "§쿠디 선택 옵션 가격",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_familiaPVC",
+      "subject": "familiaPVC",
+      "field": "price",
+      "value": 102000,
+      "source": "master",
+      "locator": "§파밀리아 PRO 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_familiaPE",
+      "subject": "familiaPE",
+      "field": "price",
+      "value": 38000,
+      "source": "master",
+      "locator": "§파밀리아 PRO 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_familiaFrontCarpet",
+      "subject": "familiaFrontCarpet",
+      "field": "price",
+      "value": 129500,
+      "source": "master",
+      "locator": "§파밀리아 PRO 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_familiaRearCarpet",
+      "subject": "familiaRearCarpet",
+      "field": "price",
+      "value": 129500,
+      "source": "master",
+      "locator": "§파밀리아 PRO 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_familiaCarpetSet",
+      "subject": "familiaCarpetSet",
+      "field": "price",
+      "value": 254000,
+      "source": "master",
+      "locator": "§파밀리아 PRO 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_familiaCarpetBagSet",
+      "subject": "familiaCarpetBagSet",
+      "field": "price",
+      "value": 344000,
+      "source": "master",
+      "locator": "§파밀리아 PRO 선택 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_skySwap",
+      "subject": "skySwap",
+      "field": "price",
+      "value": 280000,
+      "source": "master",
+      "locator": "§에어노크 해피패밀리 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_happyFront",
+      "subject": "happyFront",
+      "field": "price",
+      "value": 129000,
+      "source": "master",
+      "locator": "§에어노크 해피패밀리 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_happyDockTarp",
+      "subject": "happyDockTarp",
+      "field": "price",
+      "value": 118000,
+      "source": "master",
+      "locator": "§에어노크 해피패밀리 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_happyExtendTarp",
+      "subject": "happyExtendTarp",
+      "field": "price",
+      "value": 248000,
+      "source": "master",
+      "locator": "§에어노크 해피패밀리 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_tarpSideSet",
+      "subject": "tarpSideSet",
+      "field": "price",
+      "value": 129000,
+      "source": "master",
+      "locator": "§에어노크 해피패밀리 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_tarpGround",
+      "subject": "tarpGround",
+      "field": "price",
+      "value": 89000,
+      "source": "master",
+      "locator": "§에어노크 해피패밀리 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_happyCommonGround",
+      "subject": "happyCommonGround",
+      "field": "price",
+      "value": 89000,
+      "source": "master",
+      "locator": "§에어노크 해피패밀리 옵션",
+      "status": "확정",
+      "condition": ""
+    },
+    {
+      "id": "p_airnokPump",
+      "subject": "airnokPump",
+      "field": "price",
+      "value": 158000,
+      "source": "master",
+      "locator": "§에어노크 해피패밀리 옵션",
+      "status": "확정",
+      "condition": ""
+    }
+  ],
+  "adoptions": [
+    {
+      "subject": "airnok6Base",
+      "field": "price",
+      "claimId": "pAirnok6",
+      "reason": "2026-11-03 보관된 판매페이지의 표시 판매가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "airnok8Base",
+      "field": "price",
+      "claimId": "pAirnok8",
+      "reason": "2026-11-03 보관된 판매페이지의 표시 판매가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "airnokPump",
+      "field": "price",
+      "claimId": "p_airnokPump",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "campBase",
+      "field": "price",
+      "claimId": "pCamp",
+      "reason": "2026-11-03 보관된 판매페이지의 표시 판매가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "campFront",
+      "field": "price",
+      "claimId": "p_campFront",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "campFrontCarpet",
+      "field": "price",
+      "claimId": "p_campFrontCarpet",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "campRearCarpet",
+      "field": "price",
+      "claimId": "p_campRearCarpet",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "campSide",
+      "field": "price",
+      "claimId": "p_campSide",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "coody10Base",
+      "field": "price",
+      "claimId": "pCoody10",
+      "reason": "마스터의 판매페이지 PDF 대조 기록",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "coody10Carpet",
+      "field": "price",
+      "claimId": "p_coody10Carpet",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "coody10Ground",
+      "field": "price",
+      "claimId": "p_coody10Ground",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "coody8Base",
+      "field": "price",
+      "claimId": "pCoody8",
+      "reason": "2026-11-03 보관된 판매페이지의 표시 판매가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "coodyCarpetBag",
+      "field": "price",
+      "claimId": "p_coodyCarpetBag",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "coodyPump",
+      "field": "price",
+      "claimId": "p_coodyPump",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "familiaBase",
+      "field": "price",
+      "claimId": "pFamilia",
+      "reason": "2026-11-03 보관된 판매페이지의 표시 판매가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "familiaCarpetBagSet",
+      "field": "price",
+      "claimId": "p_familiaCarpetBagSet",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "familiaCarpetSet",
+      "field": "price",
+      "claimId": "p_familiaCarpetSet",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "familiaFrontCarpet",
+      "field": "price",
+      "claimId": "p_familiaFrontCarpet",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "familiaPE",
+      "field": "price",
+      "claimId": "p_familiaPE",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "familiaPVC",
+      "field": "price",
+      "claimId": "p_familiaPVC",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "familiaRearCarpet",
+      "field": "price",
+      "claimId": "p_familiaRearCarpet",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "happyBase",
+      "field": "price",
+      "claimId": "pHappy",
+      "reason": "2026-11-03 보관된 판매페이지의 표시 판매가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "happyCommonGround",
+      "field": "price",
+      "claimId": "p_happyCommonGround",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "happyDockTarp",
+      "field": "price",
+      "claimId": "p_happyDockTarp",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "조합 호환성 미확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "happyExtendTarp",
+      "field": "price",
+      "claimId": "p_happyExtendTarp",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "조합 호환성 미확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "happyFront",
+      "field": "price",
+      "claimId": "p_happyFront",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "기본 포함 여부·적용 위치 미확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "hubBase",
+      "field": "price",
+      "claimId": "pHub",
+      "reason": "2026-11-03 보관된 판매페이지의 표시 판매가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "hubCarpet",
+      "field": "price",
+      "claimId": "p_hubCarpet",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "hubGround",
+      "field": "price",
+      "claimId": "p_hubGround",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "proClearDoor",
+      "field": "price",
+      "claimId": "p_proClearDoor",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "정확한 호환 모델·필요 수량 미확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "proConnector",
+      "field": "price",
+      "claimId": "p_proConnector",
+      "reason": "2026-11-03 사용자 직접 제공 62,000원; 과거 59,000~62,000원 기록은 보존",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "skySwap",
+      "field": "price",
+      "claimId": "p_skySwap",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "tarpGround",
+      "field": "price",
+      "claimId": "p_tarpGround",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    },
+    {
+      "subject": "tarpSideSet",
+      "field": "price",
+      "claimId": "p_tarpSideSet",
+      "reason": "2026-11-03 사용자 직접 제공 옵션 단가",
+      "condition": "표시된 모델·구성에만 적용; 배송비 별도 확인",
+      "adoptedAt": "2026-11-03"
+    }
+  ],
+  "dockingRules": [
+    {
+      "id": "coodyDock",
+      "modules": [
+        "hubBody",
+        "coody10Body"
+      ],
+      "connector": "coodyConnector",
+      "status": "확정",
+      "source": "master",
+      "note": "PRO 커넥터 사용. 도킹 완료 외곽 치수는 미확인"
+    },
+    {
+      "id": "happyDock",
+      "modules": [
+        "st",
+        "tarp"
+      ],
+      "connector": "happyConnector",
+      "status": "확정",
+      "source": "happyPdf",
+      "note": "해피패밀리 세트 구성. SKY 교체 후 도킹 외곽은 미확인"
+    },
+    {
+      "id": "happySkyDock",
+      "modules": [
+        "st",
+        "sky"
+      ],
+      "connector": "happyConnector",
+      "status": "미확인",
+      "source": "master",
+      "note": "SKY 변경 가격만 확인; 도킹 방식과 외곽 미확인"
+    }
+  ],
+  "footprints": [
+    {
+      "key": "campBase",
+      "width": 4.2,
+      "length": 6.5,
+      "status": "확정",
+      "source": "master",
+      "note": "본체 기준"
+    },
+    {
+      "key": "familiaBase",
+      "width": 3.6,
+      "length": 4.8,
+      "status": "확정",
+      "source": "master",
+      "note": "본체 기준"
+    },
+    {
+      "key": "hubBase",
+      "width": 3.8,
+      "length": 3.6,
+      "status": "확정",
+      "source": "master",
+      "note": "본체 기준"
+    },
+    {
+      "key": "coody10Base",
+      "width": 3.6,
+      "length": 2.8,
+      "status": "확정",
+      "source": "master",
+      "note": "본체 기준"
+    },
+    {
+      "key": "happyBase",
+      "width": 3.6,
+      "length": 6.2,
+      "status": "확정",
+      "source": "happyPdf",
+      "note": "연결부 포함 외곽; SKY 미적용"
+    },
+    {
+      "key": "coodyDock",
+      "width": null,
+      "length": null,
+      "status": "미확인",
+      "source": "master",
+      "note": "약 6.7m는 추정치이므로 배치에 사용하지 않음"
+    },
+    {
+      "key": "coody8Base",
+      "width": 3.2,
+      "length": 2.5,
+      "status": "본체 치수만 확인",
+      "source": "coody8Pdf",
+      "note": "61쪽; 가이라인·차량·동선은 미확인"
+    },
+    {
+      "key": "airnok6Base",
+      "width": 2.3,
+      "length": 2.8,
+      "status": "본체 치수만 확인",
+      "source": "airnok6Pdf",
+      "note": "31쪽; 가이라인·차량·동선은 미확인"
+    },
+    {
+      "key": "airnok8Base",
+      "width": 3.6,
+      "length": 2.3,
+      "status": "본체 치수만 확인",
+      "source": "airnok8Pdf",
+      "note": "23쪽; 가이라인·차량·동선은 미확인"
+    }
+  ],
+  "verification": [
+    {
+      "id": "C1",
+      "status": "충돌",
+      "subject": "camp",
+      "issue": "과거 자료의 286만원 불일치 문구와 최신 단가 계산 일치",
+      "needed": "과거 문구의 적용 조건 확인"
+    },
+    {
+      "id": "C2",
+      "status": "충돌",
+      "subject": "happy",
+      "issue": "사용자 확인 210만원과 현재 단가 합계 209만7천원 차이",
+      "needed": "당시 주문 옵션·할인·배송 내역"
+    },
+    {
+      "id": "C3",
+      "status": "충돌",
+      "subject": "camp",
+      "issue": "면 혼용률 65:35 대 35:65",
+      "needed": "제조사 라벨 또는 명시 자료"
+    },
+    {
+      "id": "C4",
+      "status": "미확인",
+      "subject": "happyFront",
+      "issue": "정면 TPU 도어 기본 포함 여부와 적용 위치",
+      "needed": "판매자 구성품·장착 위치 확인"
+    },
+    {
+      "id": "U1",
+      "status": "미확인",
+      "subject": "coodyDock",
+      "issue": "도킹 전체 외곽·가이라인 치수",
+      "needed": "실측 또는 제조사 도면"
+    },
+    {
+      "id": "U2",
+      "status": "미확인",
+      "subject": "shipping",
+      "issue": "배송비 합배송·포함 조건",
+      "needed": "조합별 결제창"
+    },
+    {
+      "id": "U3",
+      "status": "미확인",
+      "subject": "proClearDoor",
+      "issue": "쿠디 PRO 투명문 정확한 모델·필요 수량",
+      "needed": "판매자 호환표"
+    },
+    {
+      "id": "U4",
+      "status": "미확인",
+      "subject": "skySwap",
+      "issue": "SKY 교체 시 기본 포함품·도킹 외곽",
+      "needed": "SKY 구성표"
+    },
+    {
+      "id": "U5",
+      "status": "미확인",
+      "subject": "site",
+      "issue": "가이라인·차량·동선 및 사이트 실제 사용 구역",
+      "needed": "현장 배치 정보"
+    },
+    {
+      "id": "PDF-HAPPY-TPU",
+      "status": "충돌",
+      "subject": "happy",
+      "issue": "타프쉘터 정면 TPU 도어: 기본 포함(31쪽)과 공통 유료 옵션(23쪽)의 적용 범위 충돌",
+      "needed": "정면 TPU 유료 옵션의 대상이 ST인지, 타프쉘터인지 판매자 확인"
+    },
+    {
+      "id": "PDF-HAPPY-WEIGHT",
+      "status": "충돌",
+      "subject": "happy",
+      "issue": "상품정보 49kg과 상세 구성 본체 30kg+25kg의 구성 범위 불일치",
+      "needed": "49kg의 포함 범위와 연결부 중량 확인"
+    },
+    {
+      "id": "PDF-COODY10-FLOOR",
+      "status": "충돌",
+      "subject": "coody10",
+      "issue": "같은 PDF 상품정보 바닥 PVC와 상세 사양 바닥 폴리에스터 불일치",
+      "needed": "현재 판매 모델·부위별 실제 바닥 소재 확인"
+    },
+    {
+      "id": "PDF-AIRNOK6-WEIGHT",
+      "status": "충돌",
+      "subject": "airnok6",
+      "issue": "같은 PDF 설명 18kg과 상세 사양 18.5kg 불일치",
+      "needed": "본체·포장 범위와 정확 중량 확인"
+    },
+    {
+      "id": "PDF-COODY8-DOCK",
+      "status": "미확인",
+      "subject": "coody8",
+      "issue": "도킹 가능 모델은 표기되지만 커넥터 적용 조건·완성 외곽 치수 미확인",
+      "needed": "모델별 커넥터 품번·가격·도킹 완성 치수 확인"
+    },
+    {
+      "id": "PDF-GIFT-CONDITION",
+      "status": "미확인",
+      "subject": "happy",
+      "issue": "10.0ST 플라이·사이드 TPU 증정 적용 조건 미확인",
+      "needed": "판매 기간·세트 구매 시 증정 여부 확인"
+    },
+    {
+      "id": "PDF-CAMP-GAPS",
+      "status": "미확인",
+      "subject": "camp",
+      "issue": "혼용률 충돌 미해결; 권장 에어압력과 유료 옵션의 PDF 가격 미확인",
+      "needed": "제품 원단 혼용률·권장 압력·현재 옵션가 확인"
+    },
+    {
+      "id": "PDF-FAMILIA-GAPS",
+      "status": "미확인",
+      "subject": "familia",
+      "issue": "에어빔 소재·직경, 유료 옵션 PDF 가격, 도킹 완성 외곽 미확인",
+      "needed": "판매자 기술 사양 및 옵션 가격표 확인"
+    },
+    {
+      "id": "PDF-HUB-GAPS",
+      "status": "미확인",
+      "subject": "hub",
+      "issue": "에어빔 직경·방수 수치·유료 옵션 PDF 가격·도킹 완성 외곽 미확인",
+      "needed": "판매자 기술 사양 및 옵션 가격표 확인"
+    },
+    {
+      "id": "PDF-COODY10-GAPS",
+      "status": "미확인",
+      "subject": "coody10",
+      "issue": "에어빔 소재·직경, 옵션 PDF 가격, 도킹 완성 외곽 미확인",
+      "needed": "판매자 기술 사양 및 옵션 가격표 확인"
+    },
+    {
+      "id": "PDF-HAPPY-GAPS",
+      "status": "미확인",
+      "subject": "happy",
+      "issue": "에어빔 직경·권장 압력·연결부 중량·SKY 교체 후 치수·유료 옵션 PDF 가격 미확인",
+      "needed": "판매자 기술 사양 및 옵션 가격표 확인"
+    },
+    {
+      "id": "PDF-COODY8-GAPS",
+      "status": "미확인",
+      "subject": "coody8",
+      "issue": "에어빔 소재·직경·방수 수치·도킹 완성 외곽 미확인",
+      "needed": "판매자 기술 사양 확인"
+    },
+    {
+      "id": "PDF-AIRNOK6-GAPS",
+      "status": "미확인",
+      "subject": "airnok6",
+      "issue": "수납 크기·혼용률·방수 수치·에어빔 직경/권장 압력·플라이 포함 여부 미확인",
+      "needed": "판매자 기술 사양·구성품 확인"
+    },
+    {
+      "id": "PDF-AIRNOK8-GAPS",
+      "status": "미확인",
+      "subject": "airnok8",
+      "issue": "수납 크기·혼용률·방수 수치·에어빔 직경/권장 압력 미확인",
+      "needed": "판매자 기술 사양 확인"
+    }
+  ]
+}
