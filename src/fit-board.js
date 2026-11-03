@@ -100,22 +100,32 @@ export function dockingGap(rule,scenario){
   return Number(scenario.options?.[rule.connector])>0&&Number.isFinite(rule.connectorGap)?rule.connectorGap:rule.directGap;
 }
 
-export function snapDockingPlacement(movingId,moduleIds,catalog,scenario,threshold=.35){
+export function snapDockingPlacement(movingId,moduleIds,catalog,scenario,threshold=.4){
   const present=new Set(moduleIds);
   const moduleById=id=>catalog.modules.find(module=>module.id===id);
+  const movingModule=moduleById(movingId);
+  if(!movingModule||!scenario.fitPositions?.[movingId])return null;
+  const moving=getPlacedBox(movingModule,scenario.fitPositions[movingId]);
   const candidates=[];
-  for(const rule of catalog.dockingRules.filter(item=>item.status==='확정'&&item.modules.includes(movingId)&&item.modules.every(id=>present.has(id))&&Number.isFinite(item.directGap))){
-    if(rule.connectorRequirement==='required'&&!scenario.options?.[rule.connector])continue;
-    const otherId=rule.modules.find(id=>id!==movingId),movingModule=moduleById(movingId),otherModule=moduleById(otherId);
-    if(!movingModule||!otherModule||!scenario.fitPositions?.[movingId]||!scenario.fitPositions?.[otherId])continue;
-    const moving=getPlacedBox(movingModule,scenario.fitPositions[movingId]),other=getPlacedBox(otherModule,scenario.fitPositions[otherId]);
-    const gap=dockingGap(rule,scenario),axis=dockingAxis(rule,scenario);
-    const placements=axis==='x'?
-      [{x:other.x-moving.length-gap,y:other.y+(other.width-moving.width)/2},{x:other.x+other.length+gap,y:other.y+(other.width-moving.width)/2}]:
-      [{x:other.x+(other.length-moving.length)/2,y:other.y-moving.width-gap},{x:other.x+(other.length-moving.length)/2,y:other.y+other.width+gap}];
-    for(const placement of placements){
-      const x=round(clamp(placement.x,0,SITE.length-moving.length)),y=round(clamp(placement.y,0,SITE.width-moving.width));
-      candidates.push({rule,otherId,gap,axis,position:{x,y,rotated:moving.rotated},distance:Math.hypot(x-moving.x,y-moving.y)});
+  for(const otherId of present){
+    if(otherId===movingId)continue;
+    const otherModule=moduleById(otherId);
+    if(!otherModule||!scenario.fitPositions?.[otherId])continue;
+    const other=getPlacedBox(otherModule,scenario.fitPositions[otherId]);
+    const rule=catalog.dockingRules.find(item=>item.status==='확정'&&item.modules.includes(movingId)&&item.modules.includes(otherId)&&Number.isFinite(item.directGap))||null;
+    const gap=rule?dockingGap(rule,scenario):0;
+    const axes=rule?[dockingAxis(rule,scenario)]:['x','y'];
+    const overlapX=Math.min(moving.x+moving.length,other.x+other.length)-Math.max(moving.x,other.x);
+    const overlapY=Math.min(moving.y+moving.width,other.y+other.width)-Math.max(moving.y,other.y);
+    if(axes.includes('x')&&overlapY>.1)for(const x of [other.x-moving.length-gap,other.x+other.length+gap]){
+      if(x<0||x+moving.length>SITE.length)continue;
+      const position={x:round(x),y:moving.y,rotated:moving.rotated};
+      candidates.push({rule,otherId,gap,axis:'x',position,distance:Math.abs(position.x-moving.x)});
+    }
+    if(axes.includes('y')&&overlapX>.1)for(const y of [other.y-moving.width-gap,other.y+other.width+gap]){
+      if(y<0||y+moving.width>SITE.width)continue;
+      const position={x:moving.x,y:round(y),rotated:moving.rotated};
+      candidates.push({rule,otherId,gap,axis:'y',position,distance:Math.abs(position.y-moving.y)});
     }
   }
   candidates.sort((a,b)=>a.distance-b.distance);
@@ -169,7 +179,7 @@ export function renderFitBoard(container,moduleIds,catalog,scenario,onChange=()=
   }
   let selected=scenario.fitSelected&&modules.some(x=>x.id===scenario.fitSelected)?scenario.fitSelected:modules[0].id;
   scenario.fitSelected=selected;
-  container.innerHTML=`<div class="fit-toolbar"><span class="badge">${group?'조합 전체 이동':'모듈 위치 정하기'}</span><div>${group?'<button class="ghost" type="button" data-fit-group-rotate>전체 90° 회전</button>':'<button class="ghost" type="button" data-fit-rotate>90° 회전</button><button class="ghost" type="button" data-fit-reset>초기 배치</button>'}</div></div><div class="fit-site" data-fit-site aria-label="10m × 7m 텐트 배치판">${modules.map((module,index)=>`<button type="button" class="fit-tent ${/connector/i.test(module.id)?'fit-connector-module':''}" data-fit-id="${esc(module.id)}" style="--fit-color:${index%6}" aria-label="${esc(module.name)} ${group?'조합 이동':'이동'}"><span>${esc(module.name)}</span><small></small></button>`).join('')}${connectors.map(id=>`<div class="fit-connector-contact" data-connector-id="${esc(id)}"></div>`).join('')}</div><div class="fit-readout" data-fit-readout></div>${group?'':'<div class="docking-guide" data-docking-guide></div>'}<p class="small fit-help">${group?'배치 전체를 드래그해 옮기거나 90° 회전하세요. 01에서 모듈별 위치와 방향을 조정할 수 있습니다.':'모듈을 움직여 위치를 정하세요. 확인된 도킹 변 가까이에 놓으면 올바른 접촉 위치로 맞춰집니다.'}</p>${unknown.length?`<p class="small">치수 미확인으로 제외: ${esc(unknown.map(x=>x.name).join(' · '))}</p>`:''}`;
+  container.innerHTML=`<div class="fit-toolbar"><span class="badge">${group?'조합 전체 이동':'모듈 위치 정하기'}</span><div>${group?'<button class="ghost" type="button" data-fit-group-rotate>전체 90° 회전</button>':'<button class="ghost" type="button" data-fit-rotate>90° 회전</button><button class="ghost" type="button" data-fit-reset>초기 배치</button>'}</div></div><div class="fit-site" data-fit-site aria-label="10m × 7m 텐트 배치판">${modules.map((module,index)=>`<button type="button" class="fit-tent ${/connector/i.test(module.id)?'fit-connector-module':''}" data-fit-id="${esc(module.id)}" style="--fit-color:${index%6}" aria-label="${esc(module.name)} ${group?'조합 이동':'이동'}"><span>${esc(module.name)}</span><small></small></button>`).join('')}${connectors.map(id=>`<div class="fit-connector-contact" data-connector-id="${esc(id)}"></div>`).join('')}</div><div class="fit-readout" data-fit-readout></div>${group?'':'<div class="docking-guide" data-docking-guide></div>'}<p class="small fit-help">${group?'배치 전체를 드래그해 옮기거나 90° 회전하세요. 01에서 모듈별 위치와 방향을 조정할 수 있습니다.':'모듈의 면을 다른 모듈 가까이 옮기면 자동으로 붙습니다. 확인된 도킹 방향과 커넥터 간격을 우선 적용합니다.'}</p>${unknown.length?`<p class="small">치수 미확인으로 제외: ${esc(unknown.map(x=>x.name).join(' · '))}</p>`:''}`;
   const site=container.querySelector('[data-fit-site]');
   const readout=container.querySelector('[data-fit-readout]');
   const dockingGuide=container.querySelector('[data-docking-guide]');
@@ -213,10 +223,10 @@ export function renderFitBoard(container,moduleIds,catalog,scenario,onChange=()=
         const rect=site.getBoundingClientRect();const module=modules.find(x=>x.id===id);const box=getPlacedBox(module,start);
         const dx=(moveEvent.clientX-start.clientX)/rect.width*SITE.length,dy=(moveEvent.clientY-start.clientY)/rect.height*SITE.width;
         if(group){for(const moved of moveGroup(groupStart,dx,dy))scenario.fitPositions[moved.id]={x:moved.x,y:moved.y,rotated:moved.rotated}}
-        else scenario.fitPositions[id]={x:round(clamp(start.x+dx,0,SITE.length-box.length)),y:round(clamp(start.y+dy,0,SITE.width-box.width)),rotated:start.rotated};
+        else {scenario.fitPositions[id]={x:round(clamp(start.x+dx,0,SITE.length-box.length)),y:round(clamp(start.y+dy,0,SITE.width-box.width)),rotated:start.rotated};const snap=snapDockingPlacement(id,moduleIds,catalog,scenario);if(snap)scenario.fitPositions[id]=snap.position}
         refresh();onChange(false);
       };
-      const end=()=>{const snap=group?null:snapDockingPlacement(id,moduleIds,catalog,scenario);if(snap){scenario.fitPositions[id]=snap.position;if(snap.rule.connector&&scenario.options?.[snap.rule.connector]){scenario.connectorLinks??={};scenario.connectorPositions??={};scenario.connectorLinks[snap.rule.connector]=[id,snap.otherId];const moving=getPlacedBox(modules.find(x=>x.id===id),scenario.fitPositions[id]),other=getPlacedBox(modules.find(x=>x.id===snap.otherId),scenario.fitPositions[snap.otherId]);scenario.connectorPositions[snap.rule.connector]={x:round((Math.max(moving.x,other.x)+Math.min(moving.x+moving.length,other.x+other.length))/2),y:round((Math.max(moving.y,other.y)+Math.min(moving.y+moving.width,other.y+other.width))/2)}}refresh();onChange(true)}element.removeEventListener('pointermove',move);element.removeEventListener('pointerup',end);element.removeEventListener('pointercancel',end)};
+      const end=()=>{const snap=group?null:snapDockingPlacement(id,moduleIds,catalog,scenario);if(snap){scenario.fitPositions[id]=snap.position;if(snap.rule?.connector&&scenario.options?.[snap.rule.connector]){scenario.connectorLinks??={};scenario.connectorPositions??={};scenario.connectorLinks[snap.rule.connector]=[id,snap.otherId];const moving=getPlacedBox(modules.find(x=>x.id===id),scenario.fitPositions[id]),other=getPlacedBox(modules.find(x=>x.id===snap.otherId),scenario.fitPositions[snap.otherId]);scenario.connectorPositions[snap.rule.connector]={x:round((Math.max(moving.x,other.x)+Math.min(moving.x+moving.length,other.x+other.length))/2),y:round((Math.max(moving.y,other.y)+Math.min(moving.y+moving.width,other.y+other.width))/2)}}refresh();onChange(true)}element.removeEventListener('pointermove',move);element.removeEventListener('pointerup',end);element.removeEventListener('pointercancel',end)};
       element.addEventListener('pointermove',move);element.addEventListener('pointerup',end);element.addEventListener('pointercancel',end);
     });
     element.addEventListener('click',()=>select(id));

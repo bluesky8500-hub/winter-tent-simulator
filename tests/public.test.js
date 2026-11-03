@@ -114,6 +114,14 @@ test('6.4 측면 도킹은 커넥터를 선택해도 본체가 간격 없이 맞
   const snap=snapDockingPlacement('tarp',moduleIds,catalog,scenario);
   assert.equal(snap.axis,'y');assert.equal(snap.gap,0);assert.equal(snap.position.y,3.3);
 });
+test('01에서 가까운 모듈 면은 중심을 바꾸지 않고 자동으로 붙는다',()=>{
+  const moduleIds=['airnok6Body','coody8Body'];
+  const scenario={options:{},fitPositions:{airnok6Body:{x:1,y:1,rotated:false},coody8Body:{x:4,y:1.5,rotated:false}}};
+  const snap=snapDockingPlacement('airnok6Body',moduleIds,catalog,scenario);
+  assert.equal(snap.rule,null);assert.equal(snap.axis,'x');assert.equal(snap.position.x,1.2);assert.equal(snap.position.y,1);
+  scenario.fitPositions.coody8Body.y=4;
+  assert.equal(snapDockingPlacement('airnok6Body',moduleIds,catalog,scenario),null);
+});
 test('쿠디 8.0 배송비와 자동 조합명을 적용한다',()=>{
   const result=evaluate({packages:['coody8Base'],options:{}});
   assert.equal(result.lines.find(line=>line.category==='배송비').amount,20000);
