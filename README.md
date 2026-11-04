@@ -1,9 +1,23 @@
 # 겨울 장박 에어텐트 시뮬레이터
 
-GitHub Pages에 배포되는 정적 사이트의 공개 소스입니다. `main`에 push하면 GitHub Actions가 계산 규칙을 테스트하고, 공개 데이터 추출본에서 브라우저용 JSON을 생성한 뒤 Pages에 배포합니다.
+개인 저장소 `bluesky8500-hub/winter-tent-simulator`의 GitHub Pages 정적 사이트입니다. `db/catalog.sqlite`가 제품·출처·Claim·채택값·검증 대장·변경 이력의 원본입니다. 브라우저는 빌드 중 SQLite에서 생성한 `dist/catalog.json`만 읽습니다. SQLite와 판매페이지 PDF는 Pages 산출물에 포함되지 않습니다.
 
-`deploy-source/catalog.public.json`은 비공개 `catalog.sqlite`에서 추출한 **공개용 데이터 사본**입니다. 원본 SQLite, 판매페이지 PDF, 엑셀, 마스터 문서, 내부 검토 기록은 이 저장소에 포함되지 않습니다. 원본 데이터 변경 후에는 로컬 프로젝트에서 `node scripts/export-public-data.mjs`를 실행하고 공개 소스를 다시 준비해야 합니다.
+## 새 Codex Cloud 작업에서 복원
 
-사이트의 저장 조합은 각 브라우저의 로컬 저장소에만 남으며 기기간 자동 동기화되지 않습니다. 조합 JSON 파일의 내보내기·가져오기로 공유할 수 있습니다.
+Node.js 24 이상만 필요하며 npm 패키지 설치는 필요하지 않습니다.
 
-PC 없이 Codex Cloud에서 개발을 이어가려면 [인수인계 문서](CLOUD_HANDOFF.md)를 읽고 [재개 프롬프트](CLOUD_RESUME_PROMPT.md)를 사용하세요. 원본 SQLite와 PDF가 필요한 데이터 수정은 공개 저장소만으로 수행할 수 없습니다.
+```sh
+node scripts/validate-catalog.mjs
+node scripts/export-public-data.mjs db/catalog.sqlite catalog.generated.json
+node scripts/check-catalog-parity.mjs
+node --test tests/public.test.js
+node scripts/build-frontend.mjs
+node scripts/generate-browser-data.mjs
+node scripts/check-dist.mjs
+```
+
+`npm run build`도 같은 검증·빌드를 실행합니다. `main`에 반영되면 GitHub Actions가 이 과정을 반복하고 Pages에 배포합니다. 사이트 주소는 <https://bluesky8500-hub.github.io/winter-tent-simulator/>입니다.
+
+DB 수정 절차와 출처·충돌 처리 방식은 [데이터 작업 지침](docs/DATA_WORKFLOW.md)에 있습니다. 이전 공개 JSON은 `deploy-source/catalog.public.json`에 보존해 두었으며, CI는 DB 생성 결과가 그 기준과 의미상 같은지 검사합니다. 다음 데이터 변경을 승인·검증하면 JSON 스냅샷도 DB에서 다시 생성해 갱신합니다.
+
+조합은 각 브라우저 로컬 저장소에 저장됩니다. 휴대폰끼리 자동 동기화되지 않으며 조합 JSON 내보내기·가져오기로 공유할 수 있습니다.

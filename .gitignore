@@ -1,1 +1,5 @@
 dist/
+catalog.generated.json
+db/*.sqlite-journal
+db/*.sqlite-wal
+db/*.sqlite-shm

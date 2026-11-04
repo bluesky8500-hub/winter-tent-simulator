@@ -19,14 +19,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Test public catalog and calculation rules
-        run: node --test tests/public.test.js
-      - name: Build frontend for repository path
-        run: node scripts/build-frontend.mjs
-      - name: Generate browser JSON from approved public snapshot
-        run: node scripts/generate-browser-data.mjs
-      - name: Check published file allowlist
-        run: node scripts/check-dist.mjs
+      - name: Validate SQLite, reproduce public JSON, test rules and build
+        run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

@@ -2,7 +2,7 @@ import {readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
-const data=JSON.parse(await readFile(path.join(root,'deploy-source/catalog.public.json'),'utf8'));
+const data=JSON.parse(await readFile(path.resolve(process.argv[2]??path.join(root,'catalog.generated.json')),'utf8'));
 if(data.schemaVersion!==1||!Array.isArray(data.products)||!Array.isArray(data.adoptions)||!Array.isArray(data.claims))throw new Error('Invalid public catalog');
 const ids=new Set(data.claims.map(x=>x.id));
 if(data.adoptions.some(x=>!ids.has(x.claimId)))throw new Error('Adopted claim missing from public catalog');
